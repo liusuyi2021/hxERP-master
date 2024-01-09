@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('选择客户资料')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>客户编码：</label>
+                                <input type="text" name="customerCode"/>
+                            </li>
+                            <li>
+                                <label>客户名称：</label>
+                                <input type="text" name="customerName"/>
+                            </li>
+<!--                            <li>
+                                <label>级别：</label>
+                                <select name="customerLevel" th:with="type=${@dict.getType('wms_level')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>-->
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var customerLevelDatas = [[${@dict.getType('wms_level')}]];
+        var prefix = ctx + "basis/customer";
+
+        $(function() {
+            var options = {
+                url: prefix + "/selectList",
+                showSearch: false,
+                showRefresh: false,
+                showToggle: false,
+                showColumns: false,
+                modalName: "客户资料",
+                columns: [{
+                    radio: true
+                },
+                {
+                    field: 'id',
+                    title: '客户资料id',
+                    visible: false
+                },
+                {
+                    field: 'customerCode',
+                    title: '客户编码'
+                },
+                {
+                    field: 'customerName',
+                    title: '客户名称'
+                },
+                {
+                    field: 'contactPerson',
+                    title: '联系人'
+                },
+                {
+                    field: 'telephone',
+                    title: '电话'
+                },
+                {
+                    field: 'mobilePhone',
+                    title: '手机'
+                },
+                {
+                    field: 'email',
+                    title: '邮箱',
+                    visible: false
+                },
+                {
+                    field: 'address',
+                    title: '地址'
+                },
+                {
+                    field: 'customerLevel',
+                    title: '级别',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(customerLevelDatas, value);
+                    }
+                },
+                {
+                    field: 'contactPersonOne',
+                    title: '联系人1',
+                    visible: false
+                },
+                {
+                    field: 'telephoneOne',
+                    title: '电话1',
+                    visible: false
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

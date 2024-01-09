@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('单据精灵')" />
+</head>
+<body class="gray-bg">
+     <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+         <form class="form-horizontal m" id="form-order">
+
+                <div class="row">
+                    <!-- 左边 -->
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <h4 class="form-header h4">单据资讯</h4>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label is-required">单据类别</label>
+                            <div class="col-sm-8">
+                                <select id="sheetType" name="sheetType" class="form-control m-b" onchange="onSheetType()" required>
+                                    <option value="">请选择</option>
+                                    <option value="IF">退货单</option>
+                                    <option value="IB">销退单</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label is-required">交易单位</label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <input id="warehouseId" name="warehouseId" type="hidden">
+                                    <input id="desWarehouseId" name="desWarehouseId" type="hidden">
+                                    <input id="desWarehouseName" name="desWarehouseName" class="form-control" type="text" readonly onclick="onWarehouse()" required>
+                                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label is-required">相关单据</label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <input id="orderId" name="orderId" type="hidden">
+                                    <input id="orderCode" name="orderCode" class="form-control" type="text" readonly onclick="onSheet()" required>
+                                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label is-required">订单号</label>
+                            <div class="col-sm-8"><input id="orderName" name="orderName" class="form-control" type="text" maxlength="32" required></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">备注</label>
+                            <div class="col-sm-8"><textarea id="remark" name="remark" class="form-control" rows="6" maxlength="200"></textarea></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">折扣率</label>
+                            <div class="col-sm-8"><input id="discountRate" name="discountRate" class="form-control" type="text" value="1" readonly></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">折扣金额</label>
+                            <div class="col-sm-8"><input id="discountAmount" name="discountAmount" class="form-control" type="text" value="0" readonly></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">总金额</label>
+                            <div class="col-sm-8"><input id="totalAmount" name="totalAmount" class="form-control" type="text" value="0" readonly></div>
+                        </div>
+                    </div>
+
+                    <!-- 右边 -->
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            <h4 class="form-header h4">单据内容</h4>
+                            <button type="button" class="btn btn-white btn-sm" onclick="delColumn()"><i class="fa fa-minus"> 删除</i></button>
+                            <div class="col-sm-12 select-table table-striped">
+                                <table id="bootstrap-table"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+             <!-- 最下面 确认按钮-->
+             <div class="row">
+                 <div class="col-sm-offset-5 col-sm-10">
+                     <button type="button" class="btn btn-sm btn-primary" onclick="submitHandler()"><i class="fa fa-check"></i>保 存</button>&nbsp;
+                     <button type="button" class="btn btn-sm btn-danger" onclick="onSheetType()"><i class="fa fa-reply-all"></i>重置 </button>
+                 </div>
+             </div>
+
+         </form>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "wh/order";
+
+        $(function() {
+
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                var data = $("#form-order").serializeArray();
+                //alert(JSON.stringify(data))
+                $.modal.confirm("确认要提交吗。", function() {
+                    $.operate.saveModal(prefix+"/edit", data, function (result) {
+                        if(result.code == web_status.SUCCESS){
+                            onSheetType();
+                        }
+                    });
+                })
+            }
+        }
+
+        /*选择单据*/
+        function onSheetType(){
+            //初始化所有数据
+            $('#warehouseId').val('')
+            $('#desWarehouseId').val('')
+            $('#desWarehouseName').val('')
+            $('#orderId').val('')
+            $('#orderCode').val('')
+            $('#orderName').val('')
+            $('#remark').val('')
+            $('#discountRate').val(1)
+            $('#discountAmount').val(0)
+            $('#totalAmount').val(0)
+            $.table.destroy();//表格销毁
+
+        }
+
+        /*选择交易单位*/
+        function onWarehouse(){
+            var sheetType = $('#sheetType').val();
+            if($.common.isEmpty(sheetType)){
+                $.modal.alertWarning("请选择单据类型");
+                return;
+            }
+            if(sheetType =='IF'){//退货单
+                selectSupplier();
+            }else if(sheetType =='IB'){//销退单
+                selectCustomer();
+            }
+        }
+
+        /* 选择客户 */
+        var customerPrefix = ctx + "basis/customer"
+        function selectCustomer() {
+            var url = customerPrefix + '/selectCustomer';
+            var options = {
+                title: '选择客户',
+                url: url,
+                callBack: doSubmitCustomer
+            };
+            $.modal.openOptions(options);
+        }
+
+        function doSubmitCustomer(index, layero){
+            var iframeWin = layero.find("iframe")[0].contentWindow.$.table;
+            var rows = iframeWin.selectFirstColumns();//调用子页面的方法 获取ID
+            if (rows.length == 0) {
+                $.modal.alertWarning("请至少选择一条记录");
+                return;
+            }
+            $('#desWarehouseId').val(rows.join())
+            var warehouseId=iframeWin.selectColumns("warehouseId").join();//调用子页面的方法 获取ID
+            $('#warehouseId').val(warehouseId)
+            var customerName=iframeWin.selectColumns("customerName").join();//调用子页面的方法 获取ID
+            $('#desWarehouseName').val(customerName)
+            layer.close(index);
+        }
+
+        /* 选择供应商 */
+        var supplierPrefix = ctx + "basis/supplier"
+        function selectSupplier() {
+            var url = supplierPrefix + '/selectSupplier';
+            var options = {
+                title: '选择供应商',
+                url: url,
+                callBack: doSubmitSupplier
+            };
+            $.modal.openOptions(options);
+        }
+
+        function doSubmitSupplier(index, layero){
+            var iframeWin = layero.find("iframe")[0].contentWindow.$.table;
+            var rows = iframeWin.selectFirstColumns();//调用子页面的方法 获取ID
+            if (rows.length == 0) {
+                $.modal.alertWarning("请至少选择一条记录");
+                return;
+            }
+            $('#desWarehouseId').val(rows.join())
+            var warehouseId=iframeWin.selectColumns("warehouseId").join();//调用子页面的方法 获取ID
+            $('#warehouseId').val(warehouseId)
+            var supplierName=iframeWin.selectColumns("supplierName").join();//调用子页面的方法 获取ID
+            $('#desWarehouseName').val(supplierName)
+            layer.close(index);
+        }
+
+        /* 选择相关单据 */
+        var outboundOrderPrefix = ctx + "wh/outboundOrder";
+        var warehousingOrderSeedPrefix = ctx + "wh/warehousingOrder";
+        var orderSeedPrefix = "";
+        function onSheet(){
+            var sheetType = $('#sheetType').val();
+            var desWarehouseName = $('#desWarehouseName').val();
+            if($.common.isEmpty(sheetType) || $.common.isEmpty(desWarehouseName)){
+                $.modal.alertWarning("请选择单据类型和交易单位");
+                return;
+            }
+            var url = "";
+            if(sheetType =='IF'){//退货单
+                url = warehousingOrderSeedPrefix + '/selectWarehousingOrder/'+$('#desWarehouseId').val();
+                orderSeedPrefix= ctx + "wh/warehousingOrderSeed";
+            }else if(sheetType =='IB'){//销退单
+                url = outboundOrderPrefix + '/selectOutboundOrder/'+$('#desWarehouseId').val();
+                orderSeedPrefix= ctx + "wh/outboundOrderSeed";
+            }
+            var options = {
+                title: '选择单据',
+                url: url,
+                callBack: doSubmitSheet
+            };
+            $.modal.openOptions(options);
+        }
+
+
+        function doSubmitSheet(index, layero){
+            var iframeWin = layero.find("iframe")[0].contentWindow.$.table;
+            var rows = iframeWin.selectFirstColumns();//调用子页面的方法 获取ID
+            if (rows.length == 0) {
+                $.modal.alertWarning("请至少选择一条记录");
+                return;
+            }
+            $('#orderId').val(rows.join())
+
+            var orderCode=iframeWin.selectColumns("orderCode").join();//调用子页面的方法 获取ID
+            $('#orderCode').val(orderCode)
+            var discountRate=iframeWin.selectColumns("discountRate").join();//调用子页面的方法 获取ID
+            $('#discountRate').val(discountRate)
+
+            $.table.refresh();
+            init();
+
+            layer.close(index);
+
+        }
+
+        function init(){
+            var options = {
+                url: orderSeedPrefix + "/list",
+                pagination: false,
+                showSearch: false,
+                showRefresh: false,
+                showToggle: false,
+                showColumns: false,
+                sidePagination: "client",
+                queryParams: queryParams,
+                onLoadSuccess: onLoadSuccess,//所有数据被加载成功触发
+                columns: [{
+                    checkbox: true
+                },
+                    {
+                        field: 'index',
+                        align: 'center',
+                        title: "序号",
+                        formatter: function (value, row, index) {
+                            //var columnIndex = $.common.sprintf("<input type='hidden' name='index' value='%s'>", $.table.serialNumber(index));
+                            var id = $.common.sprintf("<input type='hidden' name='orderSeedModelList[%s].id' value='%s'>",index, row.id);
+                            var shopGoodsId = $.common.sprintf("<input type='hidden' name='orderSeedModelList[%s].shopGoodsId' value='%s'>", index, row.shopGoodsId);//商品id 隐藏域
+                            return  id+$.table.serialNumber(index) + shopGoodsId;
+                        }
+                    },
+                    {
+                        field: 'id',
+                        align: 'center',
+                        title: 'id',
+                        visible: false
+                    },
+                    {
+                        field: 'shopGoodsName',
+                        align: 'center',
+                        title: '商品名称'
+                    },
+                    {
+                        field: 'goodsUnitDesc',
+                        align: 'center',
+                        title: '单位'
+                    },
+                    {
+                        field: 'planNumber',
+                        align: 'center',
+                        title: '数量',
+                        formatter: function(value, row, index) {
+                            var html ='';
+                                html +='<input class="form-control" type="text" name="orderSeedModelList['+index+'].planNumber" value="'+value+'" maxlength="6" oninput="reloadRowNumberData('+index+',this,'+row.taxUnitPrice+')"';
+                            return html;
+                        },
+                    },
+                    {
+                        field: 'taxUnitPrice',
+                        align: 'center',
+                        title: '单价(含税)'
+                    },
+                    {
+                        field: 'amount',
+                        align: 'center',
+                        title: '金额(含税)'
+                    }
+                ]
+            };
+            $.table.init(options);
+        }
+
+        function queryParams(params) {
+            var search = {
+                warehousingOrderId: $('#orderId').val(),
+                outboundOrderId: $('#orderId').val(),
+            }
+            return search;
+        }
+
+        function onLoadSuccess(data){
+            //console.log(JSON.stringify(data))
+            calculate(data)
+        }
+
+        /**
+         * 修改数量计算金额
+         * */
+        function reloadRowNumberData(index,obj,taxUnitPrice){
+            var val = $(obj).val();
+            if($.common.isEmpty(val) || !(/(^[1-9]\d*$)/.test(val))){//正整数
+                $.modal.alertWarning("不能为空或输入的不是正整数");
+                return ;
+            }
+            var data = $("#" + table.options.id).bootstrapTable('getData')[index];//某行数据
+            //console.log(JSON.stringify(data))
+            var oldVal=data.planNumber;//旧值
+            if(oldVal < val){
+                $.modal.alertWarning("输入值不能大于:"+oldVal+"否则无法下单");
+                return ;
+            }
+            data.planNumber = val;//新值
+            data.amount = numMulti(val,taxUnitPrice);
+            $("#" + table.options.id).bootstrapTable("updateRow",{index : index,row : data});
+            var dataALL = $("#" + table.options.id).bootstrapTable('getData');//查询表格所有数据
+            calculate(dataALL);
+        }
+
+        /**
+         * 计算合计商品各项值之和
+         */
+        function calculate(data) {
+            var totalAmount=0;
+            $.each(data,function(index,obj) {  //index:索引obj:循环的每个元素
+                totalAmount=numAdd(totalAmount,obj.amount);
+            });
+            $('#totalAmount').val(totalAmount);
+            var discountRate =$('#discountRate').val();//折扣率
+            $('#discountAmount').val(numSub(totalAmount,numMulti(totalAmount,discountRate)) )//折扣金额=所有商品金额合计-(所有商品金额合计*折扣率)
+        }
+
+        //删除行
+        function delColumn(){
+            var column="id";
+            var subColumn = $.common.isEmpty(column) ? "index" : column;
+            var ids = $.table.selectColumns(subColumn);
+            if (ids.length == 0) {
+                $.modal.alertWarning("请至少选择一条记录");
+                return;
+            }else if(ids.length == $("#" + table.options.id).bootstrapTable("getOptions").totalRows){
+                $.modal.alertWarning("请保留一条数据");
+                return;
+            }
+             $("#" + table.options.id).bootstrapTable('remove', { field: "id", values: ids });
+            var dataALL = $("#" + table.options.id).bootstrapTable('getData');//查询表格所有数据
+            calculate(dataALL);
+        }
+    </script>
+</body>
+</html>

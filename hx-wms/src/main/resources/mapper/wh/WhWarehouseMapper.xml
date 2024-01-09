@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wh.mapper.WhWarehouseMapper">
+    
+    <resultMap type="WhWarehouse" id="WhWarehouseResult">
+        <result property="id"    column="id"    />
+        <result property="warehouseCode"    column="warehouse_code"    />
+        <result property="warehouseName"    column="warehouse_name"    />
+        <result property="city"    column="city"    />
+        <result property="address"    column="address"    />
+        <result property="principal"    column="principal"    />
+        <result property="telephone"    column="telephone"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <sql id="selectWhWarehouseVo">
+        select id, warehouse_code, warehouse_name, city, address, principal, telephone, del_flag, create_by, create_time, update_by, update_time, remark, dept_id from wms_wh_warehouse
+    </sql>
+
+    <select id="selectWhWarehouseList" parameterType="WhWarehouse" resultMap="WhWarehouseResult">
+        <include refid="selectWhWarehouseVo"/>
+        <where>  del_flag = '0'
+            <if test="warehouseCode != null  and warehouseCode != ''"> and warehouse_code = #{warehouseCode}</if>
+            <if test="warehouseName != null  and warehouseName != ''"> and warehouse_name like concat('%', #{warehouseName}, '%')</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="principal != null  and principal != ''"> and principal = #{principal}</if>
+            <if test="telephone != null  and telephone != ''"> and telephone = #{telephone}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+    
+    <select id="selectWhWarehouseById" parameterType="Long" resultMap="WhWarehouseResult">
+        <include refid="selectWhWarehouseVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWhWarehouse" parameterType="WhWarehouse" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_wh_warehouse
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="warehouseCode != null">warehouse_code,</if>
+            <if test="warehouseName != null">warehouse_name,</if>
+            <if test="city != null">city,</if>
+            <if test="address != null">address,</if>
+            <if test="principal != null">principal,</if>
+            <if test="telephone != null">telephone,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="warehouseCode != null">#{warehouseCode},</if>
+            <if test="warehouseName != null">#{warehouseName},</if>
+            <if test="city != null">#{city},</if>
+            <if test="address != null">#{address},</if>
+            <if test="principal != null">#{principal},</if>
+            <if test="telephone != null">#{telephone},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWhWarehouse" parameterType="WhWarehouse">
+        update wms_wh_warehouse
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="warehouseCode != null">warehouse_code = #{warehouseCode},</if>
+            <if test="warehouseName != null">warehouse_name = #{warehouseName},</if>
+            <if test="city != null">city = #{city},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="principal != null">principal = #{principal},</if>
+            <if test="telephone != null">telephone = #{telephone},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWhWarehouseById" parameterType="Long">
+        delete from wms_wh_warehouse where id = #{id}
+    </delete>
+
+    <delete id="deleteWhWarehouseByIds" parameterType="String">
+        delete from wms_wh_warehouse where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 校验仓库编码是否唯一 -->
+    <select id="checkWarehouseCodeUnique" parameterType="String" resultType="int">
+		select count(1) from wms_wh_warehouse where del_flag = '0' and warehouse_code=#{warehouseCode} limit 1
+	</select>
+
+</mapper>

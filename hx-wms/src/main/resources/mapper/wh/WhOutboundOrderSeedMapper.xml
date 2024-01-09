@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wh.mapper.WhOutboundOrderSeedMapper">
+    
+    <resultMap type="WhOutboundOrderSeed" id="WhOutboundOrderSeedResult">
+        <result property="id"    column="id"    />
+        <result property="outboundOrderId"    column="outbound_order_id"    />
+        <result property="shopGoodsId"    column="shop_goods_id"    />
+        <result property="shopGoodsCode"    column="shop_goods_code"    />
+        <result property="shopGoodsName"    column="shop_goods_name"    />
+        <result property="goodsUnit"    column="goods_unit"    />
+        <result property="goodsUnitDesc"    column="goods_unit_desc"    />
+        <result property="planNumber"    column="plan_number"    />
+        <result property="actualNumber"    column="actual_number"    />
+        <result property="oweNumber"    column="owe_number"    />
+        <result property="rate"    column="rate"    />
+        <result property="unitPrice"    column="unit_price"    />
+        <result property="untaxedAmount"    column="untaxed_amount"    />
+        <result property="taxUnitPrice"    column="tax_unit_price"    />
+        <result property="tax"    column="tax"    />
+        <result property="discountPrice"    column="discount_price"    />
+        <result property="amount"    column="amount"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <sql id="selectWhOutboundOrderSeedVo">
+        select id, outbound_order_id, shop_goods_id, shop_goods_code, shop_goods_name, goods_unit, goods_unit_desc, plan_number, actual_number, owe_number, rate, unit_price, untaxed_amount, tax_unit_price, tax, discount_price, amount, del_flag, create_by, create_time, update_by, update_time, remark, dept_id from wms_wh_outbound_order_seed
+    </sql>
+
+    <select id="selectWhOutboundOrderSeedList" parameterType="WhOutboundOrderSeed" resultMap="WhOutboundOrderSeedResult">
+        <include refid="selectWhOutboundOrderSeedVo"/>
+        <where> del_flag = '0'
+            <if test="outboundOrderId != null "> and outbound_order_id = #{outboundOrderId}</if>
+            <if test="shopGoodsId != null "> and shop_goods_id = #{shopGoodsId}</if>
+            <if test="shopGoodsCode != null  and shopGoodsCode != ''"> and shop_goods_code = #{shopGoodsCode}</if>
+            <if test="shopGoodsName != null  and shopGoodsName != ''"> and shop_goods_name like concat('%', #{shopGoodsName}, '%')</if>
+            <if test="goodsUnit != null  and goodsUnit != ''"> and goods_unit = #{goodsUnit}</if>
+            <if test="goodsUnitDesc != null  and goodsUnitDesc != ''"> and goods_unit_desc = #{goodsUnitDesc}</if>
+            <if test="planNumber != null "> and plan_number = #{planNumber}</if>
+            <if test="actualNumber != null "> and actual_number = #{actualNumber}</if>
+            <if test="oweNumber != null "> and owe_number = #{oweNumber}</if>
+            <if test="rate != null "> and rate = #{rate}</if>
+            <if test="unitPrice != null "> and unit_price = #{unitPrice}</if>
+            <if test="untaxedAmount != null "> and untaxed_amount = #{untaxedAmount}</if>
+            <if test="taxUnitPrice != null "> and tax_unit_price = #{taxUnitPrice}</if>
+            <if test="tax != null "> and tax = #{tax}</if>
+            <if test="discountPrice != null "> and discount_price = #{discountPrice}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+    
+    <select id="selectWhOutboundOrderSeedById" parameterType="Long" resultMap="WhOutboundOrderSeedResult">
+        <include refid="selectWhOutboundOrderSeedVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWhOutboundOrderSeed" parameterType="WhOutboundOrderSeed" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_wh_outbound_order_seed
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="outboundOrderId != null">outbound_order_id,</if>
+            <if test="shopGoodsId != null">shop_goods_id,</if>
+            <if test="shopGoodsCode != null">shop_goods_code,</if>
+            <if test="shopGoodsName != null">shop_goods_name,</if>
+            <if test="goodsUnit != null">goods_unit,</if>
+            <if test="goodsUnitDesc != null">goods_unit_desc,</if>
+            <if test="planNumber != null">plan_number,</if>
+            <if test="actualNumber != null">actual_number,</if>
+            <if test="oweNumber != null">owe_number,</if>
+            <if test="rate != null">rate,</if>
+            <if test="unitPrice != null">unit_price,</if>
+            <if test="untaxedAmount != null">untaxed_amount,</if>
+            <if test="taxUnitPrice != null">tax_unit_price,</if>
+            <if test="tax != null">tax,</if>
+            <if test="discountPrice != null">discount_price,</if>
+            <if test="amount != null">amount,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="outboundOrderId != null">#{outboundOrderId},</if>
+            <if test="shopGoodsId != null">#{shopGoodsId},</if>
+            <if test="shopGoodsCode != null">#{shopGoodsCode},</if>
+            <if test="shopGoodsName != null">#{shopGoodsName},</if>
+            <if test="goodsUnit != null">#{goodsUnit},</if>
+            <if test="goodsUnitDesc != null">#{goodsUnitDesc},</if>
+            <if test="planNumber != null">#{planNumber},</if>
+            <if test="actualNumber != null">#{actualNumber},</if>
+            <if test="oweNumber != null">#{oweNumber},</if>
+            <if test="rate != null">#{rate},</if>
+            <if test="unitPrice != null">#{unitPrice},</if>
+            <if test="untaxedAmount != null">#{untaxedAmount},</if>
+            <if test="taxUnitPrice != null">#{taxUnitPrice},</if>
+            <if test="tax != null">#{tax},</if>
+            <if test="discountPrice != null">#{discountPrice},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWhOutboundOrderSeed" parameterType="WhOutboundOrderSeed">
+        update wms_wh_outbound_order_seed
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="outboundOrderId != null">outbound_order_id = #{outboundOrderId},</if>
+            <if test="shopGoodsId != null">shop_goods_id = #{shopGoodsId},</if>
+            <if test="shopGoodsCode != null">shop_goods_code = #{shopGoodsCode},</if>
+            <if test="shopGoodsName != null">shop_goods_name = #{shopGoodsName},</if>
+            <if test="goodsUnit != null">goods_unit = #{goodsUnit},</if>
+            <if test="goodsUnitDesc != null">goods_unit_desc = #{goodsUnitDesc},</if>
+            <if test="planNumber != null">plan_number = #{planNumber},</if>
+            <if test="actualNumber != null">actual_number = #{actualNumber},</if>
+            <if test="oweNumber != null">owe_number = #{oweNumber},</if>
+            <if test="rate != null">rate = #{rate},</if>
+            <if test="unitPrice != null">unit_price = #{unitPrice},</if>
+            <if test="untaxedAmount != null">untaxed_amount = #{untaxedAmount},</if>
+            <if test="taxUnitPrice != null">tax_unit_price = #{taxUnitPrice},</if>
+            <if test="tax != null">tax = #{tax},</if>
+            <if test="discountPrice != null">discount_price = #{discountPrice},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWhOutboundOrderSeedById" parameterType="Long">
+        delete from wms_wh_outbound_order_seed where id = #{id}
+    </delete>
+
+    <delete id="deleteWhOutboundOrderSeedByIds" parameterType="String">
+        delete from wms_wh_outbound_order_seed where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据商品出库主表ID 查询合计含税金额 -->
+    <select id="getSumAmount" parameterType="Long" resultType="BigDecimal">
+        select COALESCE(sum(amount),0) from wms_wh_outbound_order_seed where del_flag = '0' and outbound_order_id = #{outboundOrderId}
+    </select>
+
+    <!-- 根据商品出库主表ID 查询商品数量 -->
+    <select id="getOrderSeedShopCount" parameterType="Long" resultType="int">
+        select COALESCE(count(id),0) from wms_wh_outbound_order_seed where del_flag = '0' and outbound_order_id = #{outboundOrderId}
+    </select>
+
+    <!-- 批量新增订单商品信息 -->
+    <insert id="insertWhOutboundOrderSeedBatch" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_wh_outbound_order_seed (outbound_order_id,shop_goods_id,shop_goods_code,shop_goods_name,goods_unit,goods_unit_desc,plan_number,actual_number,rate,unit_price,untaxed_amount,tax_unit_price,tax,discount_price,amount,create_by,create_time,dept_id)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.outboundOrderId},#{item.shopGoodsId},#{item.shopGoodsCode},#{item.shopGoodsName},#{item.goodsUnit},#{item.goodsUnitDesc},#{item.planNumber},#{item.actualNumber},#{item.rate},#{item.unitPrice},#{item.untaxedAmount},
+            #{item.taxUnitPrice},#{item.rate},#{item.discountPrice},#{item.amount},#{item.createBy},now(),#{item.deptId})
+        </foreach>
+    </insert>
+
+</mapper>

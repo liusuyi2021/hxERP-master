@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('缺货管制订单列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>出库单：</label>
+                                <input type="text" name="params[orderCode]"/>
+                            </li>
+                            <li>
+                                <label>订单：</label>
+                                <input type="text" name="params[orderName]"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-danger multiple disabled" onclick="onStockoutAll()" shiro:hasPermission="wh:outboundStockout:remove">
+                    <i class="fa fa-remove"></i> 解欠
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('wh:outboundStockout:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('wh:outboundStockout:remove')}]];
+        var prefix = ctx + "wh/outboundStockout";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                sortName: "t.createTime",
+                sortOrder: "desc",
+                modalName: "缺货管制订单",
+                queryParams: queryParams,
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'id',
+                    title: 'id',
+                    visible: false
+                },
+                {
+                    field: 'orderCode',
+                    title: '商品出库单号'
+                },
+                {
+                    field: 'orderName',
+                    title: '商品出库订单号'
+                },
+                {
+                    field: 'shopGoodsCode',
+                    title: '商品编码'
+                },
+                {
+                    field: 'shopGoodsName',
+                    title: '商品名称'
+                },
+                {
+                    field: 'oweNumber',
+                    title: '欠货数量'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="onStockout(\'' + row.id + '\')"><i class="fa fa-remove"></i>解欠</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        function queryParams(params) {
+            var search = $.table.queryParams(params);
+            search.status = 'N';
+            return search;
+        }
+
+
+        function onStockout(id) {
+            table.set();
+            $.modal.confirm("确定解欠该条" + table.options.modalName + "吗？", function() {
+                var url = prefix + "/editStockout";
+                var data = { "ids": id };
+                $.operate.submit(url, "post", "json", data);
+            });
+        }
+
+        function onStockoutAll() {
+            table.set();
+            var rows = $.common.isEmpty(table.options.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns(table.options.uniqueId);
+            if (rows.length == 0) {
+                $.modal.alertWarning("请至少选择一条记录");
+                return;
+            }
+           $.modal.confirm("确认要解欠选中的" + rows.length + "条数据吗?", function() {
+                var url = prefix + "/editStockout";
+                var data = { "ids": rows.join() };
+                $.operate.submit(url, "post", "json", data);
+            });
+        }
+    </script>
+</body>
+</html>

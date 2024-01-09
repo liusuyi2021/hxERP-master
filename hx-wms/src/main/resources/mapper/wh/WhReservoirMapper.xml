@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wh.mapper.WhReservoirMapper">
+    
+    <resultMap type="WhReservoir" id="WhReservoirResult">
+        <result property="id"    column="id"    />
+        <result property="reservoirCode"    column="reservoir_code"    />
+        <result property="reservoirName"    column="reservoir_name"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <sql id="selectWhReservoirVo">
+        select id, reservoir_code, reservoir_name, warehouse_id, del_flag, create_by, create_time, update_by, update_time, remark, dept_id from wms_wh_reservoir
+    </sql>
+
+    <select id="selectWhReservoirList" parameterType="WhReservoir" resultMap="WhReservoirResult">
+        <include refid="selectWhReservoirVo"/>
+        <where>  del_flag = '0'
+            <if test="reservoirCode != null  and reservoirCode != ''"> and reservoir_code = #{reservoirCode}</if>
+            <if test="reservoirName != null  and reservoirName != ''"> and reservoir_name like concat('%', #{reservoirName}, '%')</if>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+    
+    <select id="selectWhReservoirById" parameterType="Long" resultMap="WhReservoirResult">
+        <include refid="selectWhReservoirVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWhReservoir" parameterType="WhReservoir" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_wh_reservoir
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="reservoirCode != null">reservoir_code,</if>
+            <if test="reservoirName != null">reservoir_name,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="reservoirCode != null">#{reservoirCode},</if>
+            <if test="reservoirName != null">#{reservoirName},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWhReservoir" parameterType="WhReservoir">
+        update wms_wh_reservoir
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="reservoirCode != null">reservoir_code = #{reservoirCode},</if>
+            <if test="reservoirName != null">reservoir_name = #{reservoirName},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWhReservoirById" parameterType="Long">
+        delete from wms_wh_reservoir where id = #{id}
+    </delete>
+
+    <delete id="deleteWhReservoirByIds" parameterType="String">
+        delete from wms_wh_reservoir where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 校验库区编码是否唯一 -->
+    <select id="checkReservoirCodeUnique" parameterType="String" resultType="int">
+		select count(1) from wms_wh_reservoir where del_flag = '0' and reservoir_code=#{reservoirCode} limit 1
+	</select>
+
+
+    <!-- 查询库区设置列表VO -->
+    <select id="selectWhReservoirVoList" parameterType="WhReservoir" resultType="com.ruoyi.wh.vo.WhReservoirVo">
+        select re.id, re.reservoir_code as reservoirCode, re.reservoir_name as reservoirName, re.warehouse_id as warehouseId, re.remark, re.dept_id as deptId,
+        wh.warehouse_name as warehouseName, wh.warehouse_code as warehouseCode
+        from wms_wh_reservoir re
+        left join wms_wh_warehouse wh on re.warehouse_id = wh.id
+        <where>  re.del_flag = '0'
+            <if test="reservoirCode != null  and reservoirCode != ''"> and re.reservoir_code = #{reservoirCode}</if>
+            <if test="reservoirName != null  and reservoirName != ''"> and re.reservoir_name like concat('%', #{reservoirName}, '%')</if>
+            <if test="warehouseId != null "> and re.warehouse_id = #{warehouseId}</if>
+            <if test="deptId != null "> and re.dept_id = #{deptId}</if>
+        </where>
+    </select>
+
+</mapper>

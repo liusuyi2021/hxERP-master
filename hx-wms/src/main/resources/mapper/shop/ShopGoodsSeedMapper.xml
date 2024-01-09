@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.shop.mapper.ShopGoodsSeedMapper">
+
+    <resultMap type="ShopGoodsSeed" id="ShopGoodsSeedResult">
+        <result property="id"    column="id"    />
+        <result property="goodsId"    column="goods_id"    />
+        <result property="safetyStock"    column="safety_stock"    />
+        <result property="stockNumber"    column="stock_number"    />
+        <result property="forPickingNumber"    column="for_picking_number"    />
+        <result property="beenPickingNumber"    column="been_picking_number"    />
+        <result property="transitNumber"    column="transit_number"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <sql id="selectShopGoodsSeedVo">
+        select id, goods_id, safety_stock, stock_number, for_picking_number, been_picking_number, transit_number, del_flag, create_by, create_time, update_by, update_time, remark, dept_id from wms_shop_goods_seed
+    </sql>
+
+    <select id="selectShopGoodsSeedList" parameterType="ShopGoodsSeed" resultMap="ShopGoodsSeedResult">
+        <include refid="selectShopGoodsSeedVo"/>
+        <where>   del_flag = '0'
+            <if test="goodsId != null "> and goods_id = #{goodsId}</if>
+            <if test="safetyStock != null "> and safety_stock = #{safetyStock}</if>
+            <if test="stockNumber != null "> and stock_number = #{stockNumber}</if>
+            <if test="forPickingNumber != null "> and for_picking_number = #{forPickingNumber}</if>
+            <if test="beenPickingNumber != null "> and been_picking_number = #{beenPickingNumber}</if>
+            <if test="transitNumber != null "> and transit_number = #{transitNumber}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+
+    <select id="selectShopGoodsSeedById" parameterType="Long" resultMap="ShopGoodsSeedResult">
+        <include refid="selectShopGoodsSeedVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertShopGoodsSeed" parameterType="ShopGoodsSeed" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_shop_goods_seed
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="goodsId != null">goods_id,</if>
+            <if test="safetyStock != null">safety_stock,</if>
+            <if test="stockNumber != null">stock_number,</if>
+            <if test="forPickingNumber != null">for_picking_number,</if>
+            <if test="beenPickingNumber != null">been_picking_number,</if>
+            <if test="transitNumber != null">transit_number,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="goodsId != null">#{goodsId},</if>
+            <if test="safetyStock != null">#{safetyStock},</if>
+            <if test="stockNumber != null">#{stockNumber},</if>
+            <if test="forPickingNumber != null">#{forPickingNumber},</if>
+            <if test="beenPickingNumber != null">#{beenPickingNumber},</if>
+            <if test="transitNumber != null">#{transitNumber},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateShopGoodsSeed" parameterType="ShopGoodsSeed">
+        update wms_shop_goods_seed
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="goodsId != null">goods_id = #{goodsId},</if>
+            <if test="safetyStock != null">safety_stock = #{safetyStock},</if>
+            <if test="stockNumber != null">stock_number = #{stockNumber},</if>
+            <if test="forPickingNumber != null">for_picking_number = #{forPickingNumber},</if>
+            <if test="beenPickingNumber != null">been_picking_number = #{beenPickingNumber},</if>
+            <if test="transitNumber != null">transit_number = #{transitNumber},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteShopGoodsSeedById" parameterType="Long">
+        delete from wms_shop_goods_seed where id = #{id}
+    </delete>
+
+    <delete id="deleteShopGoodsSeedByIds" parameterType="String">
+        delete from wms_shop_goods_seed where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 根据商品ID查询商品库存信息 -->
+    <select id="selectShopGoodsSeedBygoodsId" parameterType="Long" resultMap="ShopGoodsSeedResult">
+        <include refid="selectShopGoodsSeedVo"/>
+        where del_flag = '0' and goods_id = #{goodsId}
+    </select>
+
+    <!-- 批量修改入库商品库存数量信息 -->
+    <update id="updateShopGoodsSeedStockNumber" parameterType="java.util.Map">
+            update wms_shop_goods_seed
+            <trim prefix="set" suffixOverrides=",">
+                <trim prefix="stock_number =case" suffix="end,"> <!-- 库存数量 新增-->
+                        <foreach collection="list" item="item" index="key">
+                        <if test="item.stockNumber != null"> when id=#{item.goodsId} then  stock_number + #{item.stockNumber} </if>
+                        </foreach>
+                </trim>
+            </trim>
+            where del_flag = '0' and goods_id in
+            <foreach collection="list" item="item" index="key" separator="," open="(" close=")">
+                #{item.goodsId}
+            </foreach>
+    </update>
+
+</mapper>

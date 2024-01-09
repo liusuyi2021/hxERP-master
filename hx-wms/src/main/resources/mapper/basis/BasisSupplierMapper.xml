@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.basis.mapper.BasisSupplierMapper">
+
+    <resultMap type="BasisSupplier" id="BasisSupplierResult">
+        <result property="id"    column="id"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="supplierCode"    column="supplier_code"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="contactPerson"    column="contact_person"    />
+        <result property="telephone"    column="telephone"    />
+        <result property="mobilePhone"    column="mobile_phone"    />
+        <result property="email"    column="email"    />
+        <result property="address"    column="address"    />
+        <result property="supplierLevel"    column="supplier_level"    />
+        <result property="invoiceLookedUp"    column="invoice_looked_up"    />
+        <result property="invoiceTax"    column="invoice_tax"    />
+        <result property="invoiceType"    column="invoice_type"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <sql id="selectBasisSupplierVo">
+        select id, warehouse_id, supplier_code, supplier_name, contact_person, telephone, mobile_phone, email, address, supplier_level, invoice_looked_up, invoice_tax, invoice_type, del_flag, create_by, create_time, update_by, update_time, remark, dept_id from wms_basis_supplier
+    </sql>
+
+    <select id="selectBasisSupplierList" parameterType="BasisSupplier" resultMap="BasisSupplierResult">
+        <include refid="selectBasisSupplierVo"/>
+        <where> del_flag = '0'
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="supplierCode != null  and supplierCode != ''"> and supplier_code = #{supplierCode}</if>
+            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="contactPerson != null  and contactPerson != ''"> and contact_person = #{contactPerson}</if>
+            <if test="telephone != null  and telephone != ''"> and telephone = #{telephone}</if>
+            <if test="mobilePhone != null  and mobilePhone != ''"> and mobile_phone = #{mobilePhone}</if>
+            <if test="email != null  and email != ''"> and email = #{email}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="supplierLevel != null  and supplierLevel != ''"> and supplier_level = #{supplierLevel}</if>
+            <if test="invoiceLookedUp != null  and invoiceLookedUp != ''"> and invoice_looked_up = #{invoiceLookedUp}</if>
+            <if test="invoiceTax != null "> and invoice_tax = #{invoiceTax}</if>
+            <if test="invoiceType != null  and invoiceType != ''"> and invoice_type = #{invoiceType}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+
+    <select id="selectBasisSupplierById" parameterType="Long" resultMap="BasisSupplierResult">
+        <include refid="selectBasisSupplierVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBasisSupplier" parameterType="BasisSupplier" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_basis_supplier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="supplierCode != null">supplier_code,</if>
+            <if test="supplierName != null">supplier_name,</if>
+            <if test="contactPerson != null">contact_person,</if>
+            <if test="telephone != null">telephone,</if>
+            <if test="mobilePhone != null">mobile_phone,</if>
+            <if test="email != null">email,</if>
+            <if test="address != null">address,</if>
+            <if test="supplierLevel != null">supplier_level,</if>
+            <if test="invoiceLookedUp != null">invoice_looked_up,</if>
+            <if test="invoiceTax != null">invoice_tax,</if>
+            <if test="invoiceType != null">invoice_type,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="supplierCode != null">#{supplierCode},</if>
+            <if test="supplierName != null">#{supplierName},</if>
+            <if test="contactPerson != null">#{contactPerson},</if>
+            <if test="telephone != null">#{telephone},</if>
+            <if test="mobilePhone != null">#{mobilePhone},</if>
+            <if test="email != null">#{email},</if>
+            <if test="address != null">#{address},</if>
+            <if test="supplierLevel != null">#{supplierLevel},</if>
+            <if test="invoiceLookedUp != null">#{invoiceLookedUp},</if>
+            <if test="invoiceTax != null">#{invoiceTax},</if>
+            <if test="invoiceType != null">#{invoiceType},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBasisSupplier" parameterType="BasisSupplier">
+        update wms_basis_supplier
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="supplierCode != null">supplier_code = #{supplierCode},</if>
+            <if test="supplierName != null">supplier_name = #{supplierName},</if>
+            <if test="contactPerson != null">contact_person = #{contactPerson},</if>
+            <if test="telephone != null">telephone = #{telephone},</if>
+            <if test="mobilePhone != null">mobile_phone = #{mobilePhone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="supplierLevel != null">supplier_level = #{supplierLevel},</if>
+            <if test="invoiceLookedUp != null">invoice_looked_up = #{invoiceLookedUp},</if>
+            <if test="invoiceTax != null">invoice_tax = #{invoiceTax},</if>
+            <if test="invoiceType != null">invoice_type = #{invoiceType},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBasisSupplierById" parameterType="Long">
+        delete from wms_basis_supplier where id = #{id}
+    </delete>
+
+    <delete id="deleteBasisSupplierByIds" parameterType="String">
+        delete from wms_basis_supplier where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 校验供应商编码是否唯一 -->
+    <select id="checkSupplierCodeUnique" parameterType="String" resultType="int">
+        select count(1) from wms_basis_supplier where del_flag = '0' and supplier_code=#{supplierCode} limit 1
+    </select>
+
+</mapper>

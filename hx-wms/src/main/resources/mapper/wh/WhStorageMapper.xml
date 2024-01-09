@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wh.mapper.WhStorageMapper">
+
+    <resultMap type="WhStorage" id="WhStorageResult">
+        <result property="id"    column="id"    />
+        <result property="storageCode"    column="storage_code"    />
+        <result property="storageName"    column="storage_name"    />
+        <result property="storageBarcode"    column="storage_barcode"    />
+        <result property="reservoirId"    column="reservoir_id"    />
+        <result property="storageType"    column="storage_type"    />
+        <result property="storageAttribute"    column="storage_attribute"    />
+        <result property="storageSizeId"    column="storage_size_id"    />
+        <result property="outbound"    column="outbound"    />
+        <result property="isEmpty"    column="is_empty"    />
+        <result property="isDisable"    column="is_disable"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <sql id="selectWhStorageVo">
+        select id, storage_code, storage_name, storage_barcode, reservoir_id, storage_type, storage_attribute, storage_size_id, outbound, is_empty, is_disable, del_flag, create_by, create_time, update_by, update_time, remark, dept_id from wms_wh_storage
+    </sql>
+
+    <select id="selectWhStorageList" parameterType="WhStorage" resultMap="WhStorageResult">
+        <include refid="selectWhStorageVo"/>
+        <where> del_flag = '0'
+            <if test="storageCode != null  and storageCode != ''"> and storage_code = #{storageCode}</if>
+            <if test="storageName != null  and storageName != ''"> and storage_name like concat('%', #{storageName}, '%')</if>
+            <if test="storageBarcode != null  and storageBarcode != ''"> and storage_barcode = #{storageBarcode}</if>
+            <if test="reservoirId != null "> and reservoir_id = #{reservoirId}</if>
+            <if test="storageType != null  and storageType != ''"> and storage_type = #{storageType}</if>
+            <if test="storageAttribute != null  and storageAttribute != ''"> and storage_attribute = #{storageAttribute}</if>
+            <if test="storageSizeId != null "> and storage_size_id = #{storageSizeId}</if>
+            <if test="outbound != null  and outbound != ''"> and outbound = #{outbound}</if>
+            <if test="isEmpty != null  and isEmpty != ''"> and is_empty = #{isEmpty}</if>
+            <if test="isDisable != null  and isDisable != ''"> and is_disable = #{isDisable}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+
+    <select id="selectWhStorageById" parameterType="Long" resultMap="WhStorageResult">
+        <include refid="selectWhStorageVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWhStorage" parameterType="WhStorage" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_wh_storage
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storageCode != null">storage_code,</if>
+            <if test="storageName != null">storage_name,</if>
+            <if test="storageBarcode != null">storage_barcode,</if>
+            <if test="reservoirId != null">reservoir_id,</if>
+            <if test="storageType != null">storage_type,</if>
+            <if test="storageAttribute != null">storage_attribute,</if>
+            <if test="storageSizeId != null">storage_size_id,</if>
+            <if test="outbound != null">outbound,</if>
+            <if test="isEmpty != null">is_empty,</if>
+            <if test="isDisable != null">is_disable,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storageCode != null">#{storageCode},</if>
+            <if test="storageName != null">#{storageName},</if>
+            <if test="storageBarcode != null">#{storageBarcode},</if>
+            <if test="reservoirId != null">#{reservoirId},</if>
+            <if test="storageType != null">#{storageType},</if>
+            <if test="storageAttribute != null">#{storageAttribute},</if>
+            <if test="storageSizeId != null">#{storageSizeId},</if>
+            <if test="outbound != null">#{outbound},</if>
+            <if test="isEmpty != null">#{isEmpty},</if>
+            <if test="isDisable != null">#{isDisable},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateWhStorage" parameterType="WhStorage">
+        update wms_wh_storage
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storageCode != null">storage_code = #{storageCode},</if>
+            <if test="storageName != null">storage_name = #{storageName},</if>
+            <if test="storageBarcode != null">storage_barcode = #{storageBarcode},</if>
+            <if test="reservoirId != null">reservoir_id = #{reservoirId},</if>
+            <if test="storageType != null">storage_type = #{storageType},</if>
+            <if test="storageAttribute != null">storage_attribute = #{storageAttribute},</if>
+            <if test="storageSizeId != null">storage_size_id = #{storageSizeId},</if>
+            <if test="outbound != null">outbound = #{outbound},</if>
+            <if test="isEmpty != null">is_empty = #{isEmpty},</if>
+            <if test="isDisable != null">is_disable = #{isDisable},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWhStorageById" parameterType="Long">
+        delete from wms_wh_storage where id = #{id}
+    </delete>
+
+    <delete id="deleteWhStorageByIds" parameterType="String">
+        delete from wms_wh_storage where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 校验库位(储位)设置编码编码是否唯一 -->
+    <select id="checkStorageCodeUnique" parameterType="String" resultType="int">
+		select count(1) from wms_wh_storage where del_flag = '0' and storage_code=#{storageCode} limit 1
+	</select>
+
+    <!--查询库位(储位)设置列表VO -->
+    <select id="selectWhStorageVoList" parameterType="WhStorage" resultType="com.ruoyi.wh.vo.WhStorageVo">
+        select t.id, t.storage_code as storageCode, t.storage_name as storageName, t.storage_barcode as storageBarcode, t.reservoir_id as reservoirId, t.storage_type as storageType,
+        t.storage_attribute as storageAttribute, t.storage_size_id as storageSizeId, t.outbound as outbound, t.is_empty as isEmpty, t.is_disable as isDisable, t.remark, t.dept_id as deptId,
+        re.reservoir_code as reservoirCode, re.reservoir_name as reservoirName, ss.storage_size_name as storageSizeName
+        from wms_wh_storage t
+        left join wms_wh_reservoir re on t.reservoir_id = re.id
+        left join wms_wh_storage_size ss on t.storage_size_id = ss.id
+        <where> t.del_flag = '0'
+            <if test="storageCode != null  and storageCode != ''"> and t.storage_code = #{storageCode}</if>
+            <if test="storageName != null  and storageName != ''"> and t.storage_name like concat('%', #{storageName}, '%')</if>
+            <if test="storageBarcode != null  and storageBarcode != ''"> and t.storage_barcode = #{storageBarcode}</if>
+            <if test="reservoirId != null "> and t.reservoir_id = #{reservoirId}</if>
+            <if test="storageType != null  and storageType != ''"> and t.storage_type = #{storageType}</if>
+            <if test="storageAttribute != null  and storageAttribute != ''"> and t.storage_attribute = #{storageAttribute}</if>
+            <if test="storageSizeId != null "> and t.storage_size_id = #{storageSizeId}</if>
+            <if test="outbound != null  and outbound != ''"> and t.outbound = #{outbound}</if>
+            <if test="isEmpty != null  and isEmpty != ''"> and t.is_empty = #{isEmpty}</if>
+            <if test="isDisable != null  and isDisable != ''"> and t.is_disable = #{isDisable}</if>
+            <if test="deptId != null "> and t.dept_id = #{deptId}</if>
+        </where>
+    </select>
+
+    <!-- 批量修改空库位标识 -->
+    <update id="updateWhStorageBatch">
+        update wms_wh_storage SET is_empty = #{isEmpty}
+        where id in
+        <foreach item="id" index="index" collection="ids" open="(" separator="," close=")">
+          #{id}
+        </foreach>
+    </update>
+
+    <!--查询空库位标识，不是空库位并且库位库存数量都为0的数 -->
+    <select id="selecisEmptyList" resultType="Long">
+        select g.storage_id from wms_shop_goods_seed t
+        INNER JOIN wms_shop_goods g on t.goods_id = g.id
+        LEFT JOIN wms_wh_storage s on g.storage_id= s.id
+        where t.del_flag = '0' and t.stock_number = 0 and s.is_empty = 'N'
+        GROUP BY g.storage_id
+    </select>
+</mapper>

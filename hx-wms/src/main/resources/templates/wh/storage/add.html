@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增库位(储位)设置')" />
+    <th:block th:include="include :: select2-css" />
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-storage-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">库位编码：</label>
+            <div class="col-sm-8">
+                <input id="storageCode" name="storageCode" class="form-control" type="text" maxlength="16" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">库位名称：</label>
+            <div class="col-sm-8">
+                <input name="storageName" class="form-control" type="text" maxlength="30" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">库位条码：</label>
+            <div class="col-sm-8">
+                <input name="storageBarcode" class="form-control" type="text" maxlength="32" >
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">所属库区：</label>
+            <div class="col-sm-8">
+                <select id="reservoirId" name="reservoirId" class="form-control m-b" required>
+                    <option value="">请选择</option>
+                </select>
+                <!--<span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>-->
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">库位类型：</label>
+            <div class="col-sm-8">
+                <select name="storageType" class="form-control m-b" th:with="type=${@dict.getType('wms_storage_type')}" required>
+                    <option value="">请选择</option>
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">库位属性：</label>
+            <div class="col-sm-8">
+                <select name="storageAttribute" class="form-control m-b" th:with="type=${@dict.getType('wms_storage_attribute')}" required>
+                    <option value="">请选择</option>
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">库位尺寸：</label>
+            <div class="col-sm-8">
+                <select id="storageSizeId" name="storageSizeId" class="form-control m-b">
+                    <option value="">请选择</option>
+                </select>
+                <!--<span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>-->
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">出库口：</label>
+            <div class="col-sm-8">
+                <input name="outbound" class="form-control" type="text" maxlength="16">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">备注：</label>
+            <div class="col-sm-8">
+                <textarea name="remark" class="form-control" maxlength="200"></textarea>
+            </div>
+        </div>
+
+    </form>
+</div>
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: select2-js" />
+<script th:inline="javascript">
+    var prefix = ctx + "wh/storage"
+
+    $(function () {
+        //初始化库区设置
+        getReservoirList();
+        //初始化库位尺寸
+        getStorageSizeList();
+    })
+
+    $("#form-storage-add").validate({
+        onkeyup: false,
+        rules:{
+            reservoirCode:{
+                minlength: 2,
+                maxlength: 16,
+                remote: {
+                    url: prefix + "/checkStorageCodeUnique",
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        "storageCode": function() {
+                            return $.common.trim($("#storageCode").val());
+                        }
+                    },
+                    dataFilter: function(data, type) {
+                        return $.validate.unique(data);
+                    }
+                }
+            },
+        },
+        messages: {
+            "storageCode": {
+                remote: "库位已存在"
+            },
+        },
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-storage-add').serialize());
+        }
+    }
+
+    /**
+     * 获取库区设置下拉框信息
+     */
+    var warehousePrefix = ctx + "wh/reservoir"
+    function getReservoirList(){
+        var data = {};
+        var config = {
+            url: warehousePrefix + "/ajaxList",
+            type: "post",
+            dataType: "json",
+            data: data,
+            beforeSend: function () {
+                $.modal.loading("正在处理中，请稍后...");
+            },
+            success: function(result) {
+                //console.log(result)
+                if (result.code == web_status.SUCCESS) {
+                    var str="";
+                    $.each( result.data,function(index,value){
+                        str+='<option value="'+value.id+'">'+value.reservoirCode+'---'+value.reservoirName+'【'+value.warehouseName+'】'+'</option>';
+                    });
+                    $('#reservoirId').append(str);
+                }else {
+                    $.modal.alertError(result.msg);
+                }
+                $.modal.closeLoading();
+            }
+        };
+        $.ajax(config)
+    }
+
+    /**
+     * 获取库区设置下拉框信息
+     */
+    var storageSizePrefix = ctx + "wh/storageSize"
+    function getStorageSizeList(){
+        var data = {};
+        var config = {
+            url: storageSizePrefix + "/ajaxList",
+            type: "post",
+            dataType: "json",
+            data: data,
+            beforeSend: function () {
+                $.modal.loading("正在处理中，请稍后...");
+            },
+            success: function(result) {
+                //console.log(result)
+                if (result.code == web_status.SUCCESS) {
+                    var str="";
+                    $.each( result.data,function(index,value){
+                        str+='<option value="'+value.id+'">'+value.storageSizeName+'</option>';
+                    });
+                    $('#storageSizeId').append(str);
+                }else {
+                    $.modal.alertError(result.msg);
+                }
+                $.modal.closeLoading();
+            }
+        };
+        $.ajax(config)
+    }
+</script>
+</body>
+</html>

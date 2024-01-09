@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.shop.mapper.ShopGoodsMapper">
+
+    <resultMap type="ShopGoods" id="ShopGoodsResult">
+        <result property="id"    column="id"    />
+        <result property="goodsTypeId"    column="goods_type_id"    />
+        <result property="goodsCode"    column="goods_code"    />
+        <result property="goodsName"    column="goods_name"    />
+        <result property="goodsBarcode"    column="goods_barcode"    />
+        <result property="goodsSearchstandard"    column="goods_searchStandard"    />
+        <result property="goodsColor"    column="goods_color"    />
+        <result property="storageId"    column="storage_id"    />
+        <result property="goodsUnit"    column="goods_unit"    />
+        <result property="goodsWeight"    column="goods_weight"    />
+        <result property="costPrice"    column="cost_price"    />
+        <result property="retailPrice"    column="retail_price"    />
+        <result property="sellingPrice"    column="selling_price"    />
+        <result property="wholesalePrice"    column="wholesale_price"    />
+        <result property="isCost"    column="is_cost"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <sql id="selectShopGoodsVo">
+        select id, goods_type_id, goods_code, goods_name, goods_barcode, goods_searchStandard, goods_color, storage_id, goods_unit, goods_weight, cost_price, retail_price, selling_price, wholesale_price, is_cost, del_flag, create_by, create_time, update_by, update_time, remark, dept_id from wms_shop_goods
+    </sql>
+
+    <select id="selectShopGoodsList" parameterType="ShopGoods" resultMap="ShopGoodsResult">
+        <include refid="selectShopGoodsVo"/>
+        <where>  del_flag = '0'
+            <if test="goodsTypeId != null "> and goods_type_id = #{goodsTypeId}</if>
+            <if test="goodsCode != null  and goodsCode != ''"> and goods_code = #{goodsCode}</if>
+            <if test="goodsName != null  and goodsName != ''"> and goods_name like concat('%', #{goodsName}, '%')</if>
+            <if test="goodsBarcode != null  and goodsBarcode != ''"> and goods_barcode = #{goodsBarcode}</if>
+            <if test="goodsSearchstandard != null  and goodsSearchstandard != ''"> and goods_searchStandard = #{goodsSearchstandard}</if>
+            <if test="goodsColor != null  and goodsColor != ''"> and goods_color = #{goodsColor}</if>
+            <if test="storageId != null "> and storage_id = #{storageId}</if>
+            <if test="goodsUnit != null  and goodsUnit != ''"> and goods_unit = #{goodsUnit}</if>
+            <if test="goodsWeight != null "> and goods_weight = #{goodsWeight}</if>
+            <if test="costPrice != null "> and cost_price = #{costPrice}</if>
+            <if test="retailPrice != null "> and retail_price = #{retailPrice}</if>
+            <if test="sellingPrice != null "> and selling_price = #{sellingPrice}</if>
+            <if test="wholesalePrice != null "> and wholesale_price = #{wholesalePrice}</if>
+            <if test="isCost != null  and isCost != ''"> and is_cost = #{isCost}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+    
+    <select id="selectShopGoodsById" parameterType="Long" resultMap="ShopGoodsResult">
+        <include refid="selectShopGoodsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertShopGoods" parameterType="ShopGoods" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_shop_goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="goodsTypeId != null">goods_type_id,</if>
+            <if test="goodsCode != null">goods_code,</if>
+            <if test="goodsName != null">goods_name,</if>
+            <if test="goodsBarcode != null">goods_barcode,</if>
+            <if test="goodsSearchstandard != null">goods_searchStandard,</if>
+            <if test="goodsColor != null">goods_color,</if>
+            <if test="storageId != null">storage_id,</if>
+            <if test="goodsUnit != null">goods_unit,</if>
+            <if test="goodsWeight != null">goods_weight,</if>
+            <if test="costPrice != null">cost_price,</if>
+            <if test="retailPrice != null">retail_price,</if>
+            <if test="sellingPrice != null">selling_price,</if>
+            <if test="wholesalePrice != null">wholesale_price,</if>
+            <if test="isCost != null">is_cost,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="goodsTypeId != null">#{goodsTypeId},</if>
+            <if test="goodsCode != null">#{goodsCode},</if>
+            <if test="goodsName != null">#{goodsName},</if>
+            <if test="goodsBarcode != null">#{goodsBarcode},</if>
+            <if test="goodsSearchstandard != null">#{goodsSearchstandard},</if>
+            <if test="goodsColor != null">#{goodsColor},</if>
+            <if test="storageId != null">#{storageId},</if>
+            <if test="goodsUnit != null">#{goodsUnit},</if>
+            <if test="goodsWeight != null">#{goodsWeight},</if>
+            <if test="costPrice != null">#{costPrice},</if>
+            <if test="retailPrice != null">#{retailPrice},</if>
+            <if test="sellingPrice != null">#{sellingPrice},</if>
+            <if test="wholesalePrice != null">#{wholesalePrice},</if>
+            <if test="isCost != null">#{isCost},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateShopGoods" parameterType="ShopGoods">
+        update wms_shop_goods
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="goodsTypeId != null">goods_type_id = #{goodsTypeId},</if>
+            <if test="goodsCode != null">goods_code = #{goodsCode},</if>
+            <if test="goodsName != null">goods_name = #{goodsName},</if>
+            <if test="goodsBarcode != null">goods_barcode = #{goodsBarcode},</if>
+            <if test="goodsSearchstandard != null">goods_searchStandard = #{goodsSearchstandard},</if>
+            <if test="goodsColor != null">goods_color = #{goodsColor},</if>
+            <if test="storageId != null">storage_id = #{storageId},</if>
+            <if test="goodsUnit != null">goods_unit = #{goodsUnit},</if>
+            <if test="goodsWeight != null">goods_weight = #{goodsWeight},</if>
+            <if test="costPrice != null">cost_price = #{costPrice},</if>
+            <if test="retailPrice != null">retail_price = #{retailPrice},</if>
+            <if test="sellingPrice != null">selling_price = #{sellingPrice},</if>
+            <if test="wholesalePrice != null">wholesale_price = #{wholesalePrice},</if>
+            <if test="isCost != null">is_cost = #{isCost},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteShopGoodsById" parameterType="Long">
+        delete from wms_shop_goods where id = #{id}
+    </delete>
+
+    <delete id="deleteShopGoodsByIds" parameterType="String">
+        delete from wms_shop_goods where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 校验商品编码是否唯一 -->
+    <select id="checkGoodsCodeUnique" parameterType="String" resultType="int">
+		select count(1) from wms_shop_goods where del_flag = '0' and goods_code=#{goodsCode} limit 1
+	</select>
+
+
+    <!-- 查询商品信息列表VO -->
+    <select id="selectShopGoodsVoList" parameterType="ShopGoods" resultType="com.ruoyi.shop.vo.ShopGoodsVo">
+        select t.id, t.goods_type_id as goodsTypeId, t.goods_code as goodsCode, t.goods_name as goodsName, t.goods_barcode as goodsBarcode, t.goods_searchStandard as goodsSearchstandard, t.goods_color as goodsColor,
+        t.storage_id as storageId, t.goods_unit as goodsUnit, t.goods_weight as goodsWeight, t.cost_price as costPrice, t.retail_price as retailPrice, t.selling_price as sellingPrice, t.wholesale_price as wholesalePrice,
+        t.is_cost as isCost, t.remark, t.dept_id as deptId,
+        seed.safety_stock as safetyStock,seed.stock_number as stockNumber,
+        gt.goods_type_code as goodsTypeCode, gt.goods_type_name as goodsTypeName,
+        st.storage_code as storageCode, st.storage_name as storageName
+        from wms_shop_goods t
+        inner join  wms_shop_goods_seed seed on t.id = seed.goods_id
+        left join wms_shop_goods_type gt on t.goods_type_id = gt.id
+        left join wms_wh_storage st on t.storage_id = st.id
+        <where>  t.del_flag = '0'
+            <if test="goodsTypeId != null "> and t.goods_type_id = #{goodsTypeId}</if>
+            <if test="goodsCode != null  and goodsCode != ''"> and t.goods_code = #{goodsCode}</if>
+            <if test="goodsName != null  and goodsName != ''"> and t.goods_name like concat('%', #{goodsName}, '%')</if>
+            <if test="goodsBarcode != null  and goodsBarcode != ''"> and t.goods_barcode = #{goodsBarcode}</if>
+            <if test="goodsSearchstandard != null  and goodsSearchstandard != ''"> and t.goods_searchStandard = #{goodsSearchstandard}</if>
+            <if test="goodsColor != null  and goodsColor != ''"> and t.goods_color = #{goodsColor}</if>
+            <if test="storageId != null "> and t.storage_id = #{storageId}</if>
+            <if test="goodsUnit != null  and goodsUnit != ''"> and t.goods_unit = #{goodsUnit}</if>
+            <if test="goodsWeight != null "> and t.goods_weight = #{goodsWeight}</if>
+            <if test="costPrice != null "> and t.cost_price = #{costPrice}</if>
+            <if test="retailPrice != null "> and t.retail_price = #{retailPrice}</if>
+            <if test="sellingPrice != null "> and t.selling_price = #{sellingPrice}</if>
+            <if test="wholesalePrice != null "> and t.wholesale_price = #{wholesalePrice}</if>
+            <if test="isCost != null  and isCost != ''"> and t.is_cost = #{isCost}</if>
+            <if test="deptId != null "> and t.dept_id = #{deptId}</if>
+        </where>
+    </select>
+
+    <!--  查询商品数 -->
+    <select id="selectShopGoodsCount" parameterType="ShopGoods" resultType="int">
+        select count(1) from wms_shop_goods
+        <where>  del_flag = '0'
+            <if test="goodsTypeId != null "> and goods_type_id = #{goodsTypeId}</if>
+            <if test="storageId != null "> and storage_id = #{storageId}</if>
+            <if test="isCost != null  and isCost != ''"> and is_cost = #{isCost}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+
+    <!--  根据商品主键查询库位主键 -->
+    <select id="selectShopGoodsStorageIds" resultType="Long">
+        select storage_id from wms_shop_goods where  del_flag = '0' and id in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </select>
+
+
+    <!-- 查询库存商品信息列表VO【库存查询】 -->
+    <select id="selectShopGoodsStockVoList" parameterType="ShopGoods" resultType="com.ruoyi.shop.vo.ShopGoodsStockVo">
+        select t.id, t.goods_type_id as goodsTypeId, t.goods_code as goodsCode, t.goods_name as goodsName, t.goods_barcode as goodsBarcode, t.goods_searchStandard as goodsSearchstandard, t.goods_color as goodsColor,
+        t.storage_id as storageId, t.goods_unit as goodsUnit, t.goods_weight as goodsWeight, t.dept_id as deptId,
+        seed.safety_stock as safetyStock,seed.stock_number as stockNumber,seed.for_picking_number as forPickingNumber, seed.been_picking_number as beenPickingNumber,
+        gt.goods_type_code as goodsTypeCode, gt.goods_type_name as goodsTypeName,
+        st.storage_code as storageCode, st.storage_name as storageName
+        from wms_shop_goods t
+        inner join  wms_shop_goods_seed seed on t.id = seed.goods_id
+        left join wms_shop_goods_type gt on t.goods_type_id = gt.id
+        left join wms_wh_storage st on t.storage_id = st.id
+        <where>  t.del_flag = '0'
+            <if test="goodsTypeId != null "> and t.goods_type_id = #{goodsTypeId}</if>
+            <if test="goodsCode != null  and goodsCode != ''"> and t.goods_code = #{goodsCode}</if>
+            <if test="goodsName != null  and goodsName != ''"> and t.goods_name like concat('%', #{goodsName}, '%')</if>
+            <if test="goodsBarcode != null  and goodsBarcode != ''"> and t.goods_barcode = #{goodsBarcode}</if>
+            <if test="goodsSearchstandard != null  and goodsSearchstandard != ''"> and t.goods_searchStandard = #{goodsSearchstandard}</if>
+            <if test="goodsColor != null  and goodsColor != ''"> and t.goods_color = #{goodsColor}</if>
+            <if test="storageId != null "> and t.storage_id = #{storageId}</if>
+            <if test="goodsUnit != null  and goodsUnit != ''"> and t.goods_unit = #{goodsUnit}</if>
+            <if test="deptId != null "> and t.dept_id = #{deptId}</if>
+        </where>
+    </select>
+</mapper>

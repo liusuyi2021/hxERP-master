@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('其他出库单')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label style="width: 85px">出库单编号：</label>
+                                <input type="text" name="orderCode"/>
+                            </li>
+                            <li>
+                                <label>订单号：</label>
+                                <input type="text" name="orderName"/>
+                            </li>
+                            <li>
+                                <label>订单日期：</label>
+                                <input type="text" class="time-input" placeholder="请选择订单日期" name="orderDate"/>
+                            </li>
+                            <li>
+                                <label>单位名称：</label>
+                                <input type="text" name="desWarehouseName"/>
+                            </li>
+                            <li>
+                                <label style="width: 85px">承运商名称：</label>
+                                <input type="text" name="carriersName"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.addTab()" shiro:hasPermission="wh:outboundOrder:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.editTab()" shiro:hasPermission="wh:outboundOrder:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="wh:outboundOrder:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+<!--                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="wh:outboundOrder:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var changeStatusFlag = [[${@permission.hasPermi('wh:outboundOrder:changeStatus')}]];
+        var editFlag = [[${@permission.hasPermi('wh:outboundOrder:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('wh:outboundOrder:remove')}]];
+        var prefix = ctx + "wh/outboundOrder";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                sortName: "createTime",
+                sortOrder: "desc",
+                queryParams: queryParams,//其他出库库订单和新订单状态
+                modalName: "其他出库单",
+                detailView: true,
+                onExpandRow : function(index, row, $detail) {
+                    initChildTable(index, row, $detail);
+                },
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'id',
+                    title: 'id',
+                    visible: false
+                },
+                {
+                    field: 'orderCode',
+                    title: '出库单编号'
+                },
+                {
+                    field: 'orderName',
+                    title: '订单号'
+                },
+                {
+                    field: 'orderDate',
+                    title: '订单日期'
+                },
+                {
+                    field: 'desWarehouseName',
+                    title: '交易单位名称'
+                },
+                {
+                    field: 'carriersName',
+                    title: '承运商名称'
+                },
+                {
+                    field: 'rate',
+                    title: '税率'
+                },
+                {
+                    field: 'tax',
+                    title: '税额'
+                },
+                {
+                    field: 'discountRate',
+                    title: '折扣率'
+                },
+                {
+                    field: 'discountAmount',
+                    title: '折扣金额'
+                },
+                {
+                    field: 'discountPrice',
+                    title: '折让金额'
+                },
+                {
+                    field: 'otherFee',
+                    title: '其他费用'
+                },
+                {
+                    field: 'untaxedAmount',
+                    title: '未税金额'
+                },
+                {
+                    field: 'totalAmount',
+                    title: '含税金额(合计)'
+                },
+                {
+                    field: 'statusDesc',
+                    title: '状态'
+                },
+                {
+                    field: 'remark',
+                    title: '备注',
+                    visible: false
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + changeStatusFlag + '" href="javascript:void(0)" onclick="editStauts(\'' + row.id + '\')"></i>生成拣货单</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editTab(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+
+            /********子视图***********/
+            var orderSeedPrefix = ctx + "wh/outboundOrderSeed";
+            initChildTable = function(index, row, $detail) {
+                var childTable = $detail.html('<table style="table-layout:fixed"></table>').find('table');
+                $(childTable).bootstrapTable({
+                    url: orderSeedPrefix + "/list",
+                    method: 'post',
+                    sidePagination: "server",
+                    contentType: "application/x-www-form-urlencoded",
+                    queryParams : {
+                        outboundOrderId: row.id
+                    },
+                    columns: [{
+                        field : 'id',
+                        title : 'id',
+                        visible: false
+                    },
+                        {
+                            field: 'shopGoodsCode',
+                            title: '商品名称'
+                        },
+                        {
+                            field: 'shopGoodsName',
+                            title: '商品名称'
+                        },
+                        {
+                            field: 'goodsUnitDesc',
+                            title: '单位描述'
+                        },
+                        {
+                            field: 'planNumber',
+                            title: '计划数量'
+                        },
+                        {
+                            field: 'actualNumber',
+                            title: '实际数量'
+                        },
+                        {
+                            field: 'oweNumber',
+                            title: '欠货数量'
+                        },
+                        {
+                            field: 'taxUnitPrice',
+                            title: '含税单价'
+                        },
+                        {
+                            field: 'discountPrice',
+                            title: '折让金额'
+                        },
+                        {
+                            field: 'untaxedAmount',
+                            title: '未税金额'
+                        },
+                        {
+                            field: 'amount',
+                            title: '含税金额'
+                        }]
+                });
+            };
+
+        });
+
+        function queryParams(params) {
+            var search = $.table.queryParams(params);
+            search.orderType = '1';
+            search.status = '1';
+            return search;
+        }
+
+        /*******更改状态确认是否已到货*********/
+        function editStauts(id){
+            $.modal.confirm("确认待拣货。", function() {
+                $.operate.post(prefix + "/changeStatus", { "id": id, "status": '2' });
+            })
+        }
+    </script>
+</body>
+</html>

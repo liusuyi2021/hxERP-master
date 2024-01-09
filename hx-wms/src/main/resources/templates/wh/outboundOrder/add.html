@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增其他出库单')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-outboundOrder-add">
+            <input id="id" name="id" th:value="${whOutboundOrder.id}"  type="hidden">
+            <input id="orderType" name="orderType" type="hidden" th:value="${whOutboundOrder.orderType}">
+            <input id="deptId" name="deptId" type="hidden" th:value="${whOutboundOrder.deptId}">
+            <h4 class="form-header h4">出库信息</h4>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">出库单编号：</label>
+                        <div class="col-sm-8">
+                            <input name="orderCode" class="form-control" type="text" th:value="${whOutboundOrder.orderCode}" readonly required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">订单号：</label>
+                        <div class="col-sm-8">
+                            <input name="orderName" class="form-control" type="text" th:value="${whOutboundOrder.orderName}" maxlength="32" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">订单日期：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group date">
+                                <input id="orderDate" name="orderDate" class="form-control" placeholder="yyyy-MM-dd" type="text" th:value="${#dates.format(whOutboundOrder.orderDate, 'yyyy-MM-dd')}" required>
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">客户名称：</label>
+                        <div class="col-sm-8">
+                            <input id="warehouseId" name="warehouseId" type="hidden" th:value="${whOutboundOrder.warehouseId}">
+                            <input id="customerId" name="customerId" class="form-control" type="hidden" th:value="${whOutboundOrder.customerId}">
+                            <input id="customerName" name="customerName" class="form-control" type="text" th:value="${whOutboundOrder.customerName}" onclick="selectCustomer()" readonly required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">承运商名称：</label>
+                        <div class="col-sm-8">
+                            <input id="carriersId" name="carriersId" class="form-control" type="hidden" th:value="${whOutboundOrder.carriersId}">
+                            <input id="carriersName" name="carriersName" class="form-control" type="text" th:value="${whOutboundOrder.carriersName}"  onclick="selectCarriers()" readonly >
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">税率：</label>
+                        <div class="col-sm-8">
+                            <input id="rate" name="rate" class="form-control" type="text" th:value="${whOutboundOrder.rate}" readonly required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">折扣率：</label>
+                        <div class="col-sm-8">
+                            <input id="discountRate" name="discountRate" class="form-control" type="text" th:value="${whOutboundOrder.discountRate}" oninput="editCalculate()">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">折扣金额：</label>
+                        <div class="col-sm-8">
+                            <input id="discountAmount" name="discountAmount" class="form-control" type="text" th:value="${whOutboundOrder.discountAmount}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">折让金额：</label>
+                        <div class="col-sm-8">
+                            <input id="discountPrice" name="discountPrice" class="form-control" type="text" th:value="${whOutboundOrder.discountPrice}" oninput="editCalculate()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">其他费用：</label>
+                        <div class="col-sm-8">
+                            <input id="otherFee" name="otherFee" class="form-control" type="text" th:value="${whOutboundOrder.otherFee}" oninput="editCalculate()">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">税额：</label>
+                        <div class="col-sm-8">
+                            <input id="tax" name="tax" class="form-control" type="text" th:value="${whOutboundOrder.tax}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">未税金额：</label>
+                        <div class="col-sm-8">
+                            <input id="untaxedAmount" name="untaxedAmount" class="form-control" type="text" th:value="${whOutboundOrder.untaxedAmount}" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">含税金额：</label>
+                        <div class="col-sm-8">
+                            <input id="totalAmount" name="totalAmount" class="form-control" type="text" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">备注：</label>
+                        <div class="col-sm-8">
+                            <textarea name="remark" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+
+        <h4 class="form-header h4">商品数据</h4>
+        <div class="row">
+            <div class="col-sm-12">
+                <button type="button" class="btn btn-white btn-sm" onclick="addColumn()"><i class="fa fa-plus"> 增加</i></button>
+                <button type="button" class="btn btn-white btn-sm" onclick="delColumn()"><i class="fa fa-minus"> 删除</i></button>
+                <div class="col-sm-12 select-table table-striped">
+                    <table id="bootstrap-table"></table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-sm-offset-5 col-sm-10">
+            <button type="button" class="btn btn-sm btn-primary" onclick="submitHandler()"><i class="fa fa-check"></i>保 存</button>&nbsp;
+            <button type="button" class="btn btn-sm btn-danger" onclick="closeItem()"><i class="fa fa-reply-all"></i>关 闭 </button>
+        </div>
+    </div>
+
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "wh/outboundOrder"
+        var goodsUnitDatas = [[${@dict.getType('MEASURING_UNIT')}]];//商品单位
+
+        $("#form-outboundOrder-add").validate({
+            onkeyup: false,
+            rules:{
+                discountRate:{ number:true,min: 0, max: 1,  },
+                discountAmount:{ number:true },
+                discountPrice:{ number:true},
+                otherFee:{ number:true },
+            },
+            messages: {
+                "discountRate": { remote: "请输入合法的数字" },//折扣率
+                "discountAmount": { remote: "请输入合法的数字" },//折扣金额
+                "discountPrice": { remote: "请输入合法的数字" },//折让金额
+                "otherFee": { remote: "请输入合法的数字" },//其他费用
+            },
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.saveTab(prefix + "/edit", $('#form-outboundOrder-add').serialize());
+            }
+        }
+
+        //日期
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#orderDate' ,//指定元素
+                theme: 'molv',//theme - 主题
+                trigger: 'click', //采用click弹出
+                max: -1 //min/max - 最小/大范围内的日期时间值
+            });
+        });
+
+
+        $(function() {
+            init();
+        });
+        //初始化商品数据
+        var outboundOrderSeedPrefix = ctx + "wh/outboundOrderSeed";
+        function init(){
+            // 初始化数据, 可以由后台传过来
+            var data = [
+            ];
+
+            var options = {
+                //data: data,
+                url: outboundOrderSeedPrefix + "/list",
+                pagination: false,
+                showSearch: false,
+                showRefresh: false,
+                showToggle: false,
+                showColumns: false,
+                sidePagination: "client",
+                queryParams: queryParams,
+                onLoadSuccess: onLoadSuccess,//所有数据被加载成功触发
+                columns: [{
+                    checkbox: true
+                },
+                    {
+                        field: 'index',
+                        align: 'center',
+                        title: "序号",
+                        formatter: function (value, row, index) {
+                            var columnIndex = $.common.sprintf("<input type='hidden' name='index' value='%s'>", $.table.serialNumber(index));
+                            var shopGoodsId = $.common.sprintf("<input type='hidden' name='goods[%s].shopGoodsId' value='%s'>", index, row.shopGoodsId);//商品id 隐藏域
+                            return columnIndex + $.table.serialNumber(index) + shopGoodsId;
+                        }
+                    },
+                    {
+                        field: 'id',
+                        align: 'center',
+                        title: 'id',
+                        visible: false
+                    },
+                    {
+                        field: 'shopGoodsName',
+                        align: 'center',
+                        title: '商品名称',
+                        formatter: function(value, row, index) {
+                            var html = $.common.sprintf("<input class='form-control' type='text' name='goods[%s].shopGoodsName' value='%s' readonly>", index, value);
+                            return html;
+                        },
+                        events: onclickEvent
+                    },
+                    {
+                        field: 'goodsUnit',
+                        align: 'center',
+                        title: '单位',
+                        formatter: function(value, row, index) {
+                            var html = $.common.sprintf("<input class='form-control' type='text' name='goods[%s].goodsUnitDesc' value='%s' readonly>", index, row.goodsUnitDesc);
+                            var goodsUnit = $.common.sprintf("<input type='hidden' name='goods[%s].goodsUnit' value='%s'>", index, value);//商品id 隐藏域
+                            return html+goodsUnit;
+                        }
+                    },
+                    {
+                        field: 'planNumber',
+                        align: 'center',
+                        title: '数量',
+                        formatter: function(value, row, index) {
+                            var html ='';
+                            if($.common.isEmpty(row.id)){
+                                html +='<input class="form-control" type="text" name="goods['+index+'].planNumber" value="'+value+'" maxlength="6" >';
+                            }else{
+                                html +='<input class="form-control" type="text" name="goods['+index+'].planNumber" value="'+value+'" maxlength="6" oninput="reloadRowNumberData('+row.id+',this,'+row.taxUnitPrice+','+row.discountPrice+')">';
+                            }
+                            return html;
+                        },
+                    },
+                    {
+                        field: 'taxUnitPrice',
+                        align: 'center',
+                        title: '单价(含税)',
+                        formatter: function(value, row, index) {
+                            var html ='';
+                            if($.common.isEmpty(row.id)){
+                                html +='<input class="form-control" type="text" name="goods[+index+].taxUnitPrice" value="'+value+'" maxlength="10" >';
+                            }else{
+                                html +='<input class="form-control" type="text" name="goods[+index+].taxUnitPrice" value="'+value+'" maxlength="10" oninput="reloadRowPriceData('+row.id+','+row.planNumber+',this,'+row.discountPrice+')">';
+                            }
+                            return html;
+                        },
+                    },
+                    {
+                        field: 'discountPrice',
+                        align: 'center',
+                        title: '折让金额',
+                        formatter: function(value, row, index) {
+                            var html ='';
+                            if($.common.isEmpty(row.id)){
+                                html +='<input class="form-control" type="text" name="goods[+index+].discountPrice" value="'+value+'" maxlength="10" >';
+                            }else{
+                                html +='<input class="form-control" type="text" name="goods[+index+].discountPrice" value="'+value+'" maxlength="10" oninput="reloadRowDiscountPriceData('+row.id+','+row.planNumber+','+row.taxUnitPrice+',this)">';
+                            }
+                            return html;
+                        },
+                    },
+                    {
+                        field: 'amount',
+                        align: 'center',
+                        title: '金额(含税)',
+                        formatter: function(value, row, index) {
+                            var html = $.common.sprintf("<input class='form-control' type='text' name='goods[%s].amount' value='%s' readonly>", index, value);
+                            return html;
+                        }
+                    }
+                ]
+            };
+            $.table.init(options);
+        }
+
+        //新增自带查询参数 warehousingOrderId 入库单主键
+        function queryParams(params) {
+            var search = {
+                outboundOrderId: $('#id').val(),
+            }
+            return search;
+        }
+        function onLoadSuccess(data){
+            //console.log(JSON.stringify(data))
+            calculate(data);//合计商品各项值
+        }
+
+        //新增table行
+        function addColumn() {
+            var row = {
+                id: "",
+                shopGoodsId: "",
+                shopGoodsName: "",
+                goodsUnit: "",
+                goodsUnitDesc:"",
+                planNumber: 1,
+                taxUnitPrice:0,
+                discountPrice:0,
+                amount: 0,
+            }
+            var count = $("#" + table.options.id).bootstrapTable('getData').length;
+            $("#" + table.options.id).bootstrapTable('insertRow', {
+                index: count + 1,
+                row: row
+            });
+        }
+        //删除行
+        function delColumn(){
+            sub.editColumn();
+            var column="id";
+            var subColumn = $.common.isEmpty(column) ? "index" : column;
+            var ids = $.table.selectColumns(subColumn);
+            if (ids.length == 0) {
+                $.modal.alertWarning("请至少选择一条记录");
+                return;
+            }
+            if($.common.isEmpty(ids.join())){
+                $("#" + table.options.id).bootstrapTable('remove', { field: "index", values: $.table.selectColumns("index") });
+            }else{
+                var data = { "ids": ids.join()};
+                $.operate.post(outboundOrderSeedPrefix + "/remove", data);
+            }
+        }
+
+        /* 选择客户 */
+        var customerPrefix = ctx + "basis/customer"
+        function selectCustomer() {
+            var url = customerPrefix + '/selectCustomer';
+            var options = {
+                title: '选择客户',
+                url: url,
+                callBack: doSubmitCustomer
+            };
+            $.modal.openOptions(options);
+        }
+
+        function doSubmitCustomer(index, layero){
+            var iframeWin = layero.find("iframe")[0].contentWindow.$.table;
+            var rows = iframeWin.selectFirstColumns();//调用子页面的方法 获取ID
+            if (rows.length == 0) {
+                $.modal.alertWarning("请至少选择一条记录");
+                return;
+            }
+            $('#customerId').val(rows.join())
+            var warehouseId=iframeWin.selectColumns("warehouseId").join();//调用子页面的方法 获取ID
+            $('#warehouseId').val(warehouseId)
+            var customerName=iframeWin.selectColumns("customerName").join();//调用子页面的方法 获取ID
+            $('#customerName').val(customerName)
+            var rate=iframeWin.selectColumns("invoiceTax").join();//调用子页面的方法 获取ID
+            $('#rate').val(rate);
+            //存储
+            $.operate.post(prefix + "/edit", {"id":$('#id').val(),"warehouseId":warehouseId,"customerId":rows.join(),"customerName":customerName});
+            layer.close(index);
+        }
+
+        /* 选择承运商 */
+        var carrierPrefix = ctx + "basis/carriers"
+        function selectCarriers(){
+            var url = carrierPrefix + '/selectCarriers';
+            var options = {
+                title: '选择承运商',
+                url: url,
+                callBack: doSubmitCarriers
+            };
+            $.modal.openOptions(options);
+        }
+        function doSubmitCarriers(index, layero){
+            var iframeWin = layero.find("iframe")[0].contentWindow.$.table;
+            var rows = iframeWin.selectFirstColumns();//调用子页面的方法 获取ID
+            if (rows.length == 0) {
+                $.modal.alertWarning("请至少选择一条记录");
+                return;
+            }
+            $('#carriersId').val(rows.join())
+            var carriersName=iframeWin.selectColumns("carriersName").join();//调用子页面的方法 获取ID
+            $('#carriersName').val(carriersName)
+            layer.close(index);
+        }
+
+        /* 选择商品 */
+        var goodsPrefix = ctx + "shop/goods"
+        function  selectShopGoods() {// index:所在行的索引
+            var url = goodsPrefix + '/selectGoods';
+            var options = {
+                title: '选择商品',
+                url: url,
+                callBack: doSubmitGoods
+            };
+            $.modal.openOptions(options);
+        }
+
+        var orderSeedId;//子表ID
+        function doSubmitGoods(index, layero){
+            var iframeWin = layero.find("iframe")[0].contentWindow.$.table;
+            var rows = iframeWin.selectFirstColumns();//调用子页面的方法 获取ID
+            if (rows.length == 0) {
+                $.modal.alertWarning("请至少选择一条记录");
+                return;
+            }
+
+            var shopGoodsId=iframeWin.selectColumns("id").join();//调用子页面的方法 获取ID
+            var goodsCode=iframeWin.selectColumns("goodsCode").join();//调用子页面的方法 获取ID
+            var goodsName=iframeWin.selectColumns("goodsName").join();//调用子页面的方法 获取ID
+            var goodsUnit=iframeWin.selectColumns("goodsUnit").join();//调用子页面的方法 获取ID
+            var sellingPrice=iframeWin.selectColumns("sellingPrice").join();//调用子页面的方法 获取ID
+            var goodsUnitDesc = "";//单位描述
+            $.each(goodsUnitDatas,function(index,obj){  //index:索引obj:循环的每个元素
+                if(obj.dictValue == goodsUnit){
+                    goodsUnitDesc= obj.dictLabel;
+                }
+            });
+            var data = $("#" + table.options.id).bootstrapTable('getData');
+            var flag=0;
+            $.each(data,function(index,obj) {  //index:索引obj:循环的每个元素
+                if(obj.shopGoodsId ==  shopGoodsId){
+                    flag=1;
+                    return false; //跳出循环
+                }
+            });
+            if(flag == 1){$.modal.alertWarning("商品已在清单中!"); return;}
+
+            layer.close(index);
+
+            //更新表格数据 ajax 调用后台存储
+            var _data  = {
+                "outboundOrderId":$('#id').val(),
+                "shopGoodsId": shopGoodsId,
+                "shopGoodsCode": goodsCode,
+                "shopGoodsName": goodsName,
+                "goodsUnit":goodsUnit,
+                "goodsUnitDesc":goodsUnitDesc,
+                "planNumber":"1",
+                "taxUnitPrice":sellingPrice,
+                "discountPrice":0,
+                "amount": sellingPrice
+            }
+            if($.common.isEmpty(orderSeedId)){
+                $.operate.post(outboundOrderSeedPrefix + "/add", _data);
+            }else{
+                _data.id=orderSeedId;
+                $.operate.post(outboundOrderSeedPrefix + "/edit", _data);
+            }
+        }
+
+        /**
+         * 选中商品事件
+         * */
+        window.onclickEvent = {
+            'click .form-control': function (e, value, row, index) {
+                orderSeedId = row.id
+                selectShopGoods();
+            }
+        };
+
+        /**
+         * 修改数量计算金额
+         * */
+        function reloadRowNumberData(id,obj,taxUnitPrice,discountPrice){
+            if($.common.isNotEmpty(id)){
+                var val = $(obj).val();
+                if($.common.isEmpty(val) || !(/(^[1-9]\d*$)/.test(val))){//正整数
+                    $.modal.alertWarning("不能为空或输入的不是正整数");
+                    return ;
+                }
+                updateCell(id,val,taxUnitPrice,discountPrice);//修改值
+            }
+        }
+        /**
+         * 修改单价计算金额
+         * */
+        function reloadRowPriceData(id,planNumber,obj,discountPrice){
+            if($.common.isNotEmpty(id)) {
+                var val = $(obj).val();
+                var regu=/^\d+(\.{0,1}\d{1,2})?$/;//非负浮点数（正浮点数 + 0）
+                if($.common.isEmpty(val) || !regu.test(val) ){
+                    $.modal.alertWarning("不能为空或输入的不是非负浮点数(只能保留2位)");
+                    return ;
+                }
+                updateCell(id, planNumber, val, discountPrice);//修改值
+            }
+        }
+
+        /**
+         * 修改折让金额
+         * */
+        function reloadRowDiscountPriceData(id,planNumber,taxUnitPrice,obj){
+            if($.common.isNotEmpty(id)) {
+                var val = $(obj).val();
+                var regu=/^\d+(\.{0,1}\d{1,2})?$/;//非负浮点数（正浮点数 + 0）
+                if($.common.isEmpty(val) || !regu.test(val) ){
+                    $.modal.alertWarning("不能为空或输入的不是非负浮点数(只能保留2位)");
+                    return ;
+                }
+                updateCell(id, planNumber,taxUnitPrice, val);//修改值
+            }
+        }
+
+        //更新指定的列数据
+        function updateCell(id,planNumberVal,taxUnitPriceVal,discountPriceVal) {//更新表格数据 ajax 调用后台存储
+            var _data  = {
+                "id":id,
+                "planNumber": planNumberVal,
+                "taxUnitPrice":taxUnitPriceVal,
+                "discountPrice":discountPriceVal
+            }
+            $.operate.post(outboundOrderSeedPrefix + "/edit", _data);
+
+        }
+
+        /**
+         * 计算合计商品各项值之和
+         */
+        function calculate(data) {
+            var totalAmount=0; //含税金额=(所有商品金额合计*折扣率)-折让金额+其他费用
+            var totalUntaxedAmount=0; //未税金额=所有商品未税金额合计
+            var totalTax=0; //税额=所有商品税额合计
+            $.each(data,function(index,obj) {  //index:索引obj:循环的每个元素
+                totalAmount=numAdd(totalAmount,obj.amount);
+            });
+
+            var discountRate =$('#discountRate').val();//折扣率
+            var discountPrice= $('#discountPrice').val();//折让金额
+            var otherFee= $('#otherFee').val();//其他费用
+            var v1 = numMulti(totalAmount,discountRate);//所有商品金额合计*折扣率
+            var v2 = numSub(v1,discountPrice)//(所有商品金额合计*折扣率)-折让金额
+            totalAmount = numAdd(v2,otherFee);
+            $('#totalAmount').val(totalAmount);
+
+            var rate = $('#rate').val();//税率
+            totalTax = numMulti(totalAmount,rate)
+            $('#tax').val(totalTax);/** 税额=含税金额*税率 */
+            totalUntaxedAmount= numSub(totalAmount,totalTax)
+            $('#untaxedAmount').val(totalUntaxedAmount);//未税金额=含税金额-税额
+        }
+
+
+        /**
+         * 输入折扣率或折让金额或其他费用时，从新计算
+         */
+        function editCalculate(){
+            //console.log(JSON.stringify(data))
+            var data = $("#" + table.options.id).bootstrapTable('getData');//查询表格所有数据
+            calculate(data)
+        }
+    </script>
+</body>
+</html>

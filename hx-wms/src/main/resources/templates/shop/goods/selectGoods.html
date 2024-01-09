@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('商品信息列表')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>商品类别：</label>
+                            <input type="hidden" name="goodsTypeId" id="treeId"/>
+                            <input type="text" onclick="selectGoodsTypeTree()" id="treeName" name="treeName" readonly="true">
+                        </li>
+                        <li>
+                            <label>商品编码：</label>
+                            <input type="text" name="goodsCode"/>
+                        </li>
+                        <li>
+                            <label>商品名称：</label>
+                            <input type="text" name="goodsName"/>
+                        </li>
+                        <li>
+                            <label>商品条码：</label>
+                            <input type="text" name="goodsBarcode"/>
+                        </li>
+
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('shop:goods:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('shop:goods:remove')}]];
+    var goodsUnitDatas = [[${@dict.getType('MEASURING_UNIT')}]];
+    var prefix = ctx + "shop/goods";
+
+    $(function() {
+        var options = {
+            url: prefix + "/selectList",
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            modalName: "商品信息",
+            columns: [{
+                radio: true
+            },
+                {
+                    field: 'id',
+                    title: 'id',
+                    visible: false
+                },
+                {
+                    field: 'goodsTypeName',
+                    title: '商品类别'
+                },
+                {
+                    field: 'goodsCode',
+                    title: '商品编码'
+                },
+                {
+                    field: 'goodsName',
+                    title: '商品名称'
+                },
+                {
+                    field: 'goodsBarcode',
+                    title: '商品条码'
+                },
+                {
+                    field: 'goodsSearchstandard',
+                    title: '商品规格',
+                    visible: false
+                },
+                {
+                    field: 'storageName',
+                    title: '所属库位',
+                    visible: false
+                },
+                {
+                    field: 'goodsUnit',
+                    title: '商品单位',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(goodsUnitDatas, value);
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    var goodsTypePrefix = ctx + "shop/goodsType"
+    /*商品类别-选择父商品类别树*/
+    function selectGoodsTypeTree() {
+        var options = {
+            title: '商品类别选择',
+            width: "380",
+            url: goodsTypePrefix + "/selectGoodsTypeTree/" + $("#treeId").val(),
+            callBack: doSubmit
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmit(index, layero){
+        var body = layer.getChildFrame('body', index);
+        $("#treeId").val(body.find('#treeId').val());
+        $("#treeName").val(body.find('#treeName').val());
+        layer.close(index);
+    }
+</script>
+</body>
+</html>

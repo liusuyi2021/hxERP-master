@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.basis.mapper.DeptWarehouseMapper">
+
+    <resultMap type="DeptWarehouse" id="DeptWarehouseResult">
+        <result property="id"    column="id"    />
+        <result property="warehouseDeptId"    column="warehouse_dept_id"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="orderRelationship"    column="order_relationship"    />
+        <result property="costType"    column="cost_type"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <sql id="selectDeptWarehouseVo">
+        select id, warehouse_dept_id, warehouse_id, order_relationship, cost_type, del_flag, create_by, create_time, update_by, update_time, remark, dept_id from oms_basis_dept_warehouse
+    </sql>
+
+    <select id="selectDeptWarehouseList" parameterType="DeptWarehouse" resultMap="DeptWarehouseResult">
+        <include refid="selectDeptWarehouseVo"/>
+        <where> del_flag = '0'
+            <if test="warehouseDeptId != null "> and warehouse_dept_id = #{warehouseDeptId}</if>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="orderRelationship != null  and orderRelationship != ''"> and order_relationship = #{orderRelationship}</if>
+            <if test="costType != null  and costType != ''"> and cost_type = #{costType}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+
+    <select id="selectDeptWarehouseById" parameterType="Long" resultMap="DeptWarehouseResult">
+        <include refid="selectDeptWarehouseVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDeptWarehouse" parameterType="DeptWarehouse" useGeneratedKeys="true" keyProperty="id">
+        insert into oms_basis_dept_warehouse
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="warehouseDeptId != null">warehouse_dept_id,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="orderRelationship != null">order_relationship,</if>
+            <if test="costType != null">cost_type,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="warehouseDeptId != null">#{warehouseDeptId},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="orderRelationship != null">#{orderRelationship},</if>
+            <if test="costType != null">#{costType},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDeptWarehouse" parameterType="DeptWarehouse">
+        update oms_basis_dept_warehouse
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="warehouseDeptId != null">warehouse_dept_id = #{warehouseDeptId},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="orderRelationship != null">order_relationship = #{orderRelationship},</if>
+            <if test="costType != null">cost_type = #{costType},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDeptWarehouseById" parameterType="Long">
+        delete from oms_basis_dept_warehouse where id = #{id}
+    </delete>
+
+    <delete id="deleteDeptWarehouseByIds" parameterType="String">
+        delete from oms_basis_dept_warehouse where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 查询单位(部门)与客户或供应商关联列表Vo -->
+    <select id="selectDeptWarehouseListVo" parameterType="DeptWarehouse" resultType="com.ruoyi.basis.vo.DeptWarehouseVo">
+        select t.id, t.warehouse_dept_id as warehouseDeptId, t.warehouse_id as warehouseId, t.order_relationship as orderRelationship, t.cost_type as costType, t.dept_id as deptId,
+        b.warehouse_type as warehouseType, d.dept_name as warehouseDeptName,c.id as customerId, c.customer_name as customerName, c.invoice_tax as customerInvoiceTax, s.id as supplierId, s.supplier_name as supplierName, s.invoice_tax as supplierInvoiceTax
+        from oms_basis_dept_warehouse t
+        inner join sys_dept d on t.warehouse_dept_id = d.dept_id
+        inner join wms_basis_warehouse b on t.warehouse_id = b.id
+        left join wms_basis_customer c on c.warehouse_id = t.warehouse_id
+        left join wms_basis_supplier s on s.warehouse_id = t.warehouse_id
+        <where> t.del_flag = '0'
+            <if test="warehouseDeptId != null "> and t.warehouse_dept_id = #{warehouseDeptId}</if>
+            <if test="warehouseId != null "> and t.warehouse_id = #{warehouseId}</if>
+            <if test="orderRelationship != null  and orderRelationship != ''"> and t.order_relationship = #{orderRelationship}</if>
+            <if test="costType != null  and costType != ''"> and t.cost_type = #{costType}</if>
+            <if test="deptId != null "> and t.dept_id = #{deptId}</if>
+            <if test="params.warehouseType != null  and params.warehouseType != ''"> and b.warehouse_type = #{params.warehouseType}</if>
+            <if test="params.warehouseName != null and params.warehouseName != ''"> and  (c.customer_name like concat('%', #{params.warehouseName}, '%') or s.supplier_name like concat('%', #{params.warehouseName}, '%') )</if>
+        </where>
+    </select>
+
+    <!-- 查询单位(部门)与客户或供应商关联 -->
+    <select id="selectDeptWarehouseByWarehouseId" parameterType="DeptWarehouse" resultMap="DeptWarehouseResult">
+        <include refid="selectDeptWarehouseVo"/>
+        where del_flag = '0' and warehouse_id = #{warehouseId} and dept_id = #{deptId}
+    </select>
+</mapper>

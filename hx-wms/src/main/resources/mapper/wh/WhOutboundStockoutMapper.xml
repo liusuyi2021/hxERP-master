@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wh.mapper.WhOutboundStockoutMapper">
+    
+    <resultMap type="WhOutboundStockout" id="WhOutboundStockoutResult">
+        <result property="id"    column="id"    />
+        <result property="outboundOrderId"    column="outbound_order_id"    />
+        <result property="outboundOrderSeedId"    column="outbound_order_seed_id"    />
+        <result property="shopGoodsId"    column="shop_goods_id"    />
+        <result property="oweNumber"    column="owe_number"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <sql id="selectWhOutboundStockoutVo">
+        select id, outbound_order_id, outbound_order_seed_id, shop_goods_id, owe_number, status, del_flag, create_by, create_time, update_by, update_time, remark, dept_id from wms_wh_outbound_stockout
+    </sql>
+
+    <select id="selectWhOutboundStockoutList" parameterType="WhOutboundStockout" resultMap="WhOutboundStockoutResult">
+        <include refid="selectWhOutboundStockoutVo"/>
+        <where>  del_flag = '0'
+            <if test="outboundOrderId != null "> and outbound_order_id = #{outboundOrderId}</if>
+            <if test="outboundOrderSeedId != null "> and outbound_order_seed_id = #{outboundOrderSeedId}</if>
+            <if test="shopGoodsId != null "> and shop_goods_id = #{shopGoodsId}</if>
+            <if test="oweNumber != null "> and owe_number = #{oweNumber}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+    
+    <select id="selectWhOutboundStockoutById" parameterType="Long" resultMap="WhOutboundStockoutResult">
+        <include refid="selectWhOutboundStockoutVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWhOutboundStockout" parameterType="WhOutboundStockout" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_wh_outbound_stockout
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="outboundOrderId != null">outbound_order_id,</if>
+            <if test="outboundOrderSeedId != null">outbound_order_seed_id,</if>
+            <if test="shopGoodsId != null">shop_goods_id,</if>
+            <if test="oweNumber != null">owe_number,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="outboundOrderId != null">#{outboundOrderId},</if>
+            <if test="outboundOrderSeedId != null">#{outboundOrderSeedId},</if>
+            <if test="shopGoodsId != null">#{shopGoodsId},</if>
+            <if test="oweNumber != null">#{oweNumber},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWhOutboundStockout" parameterType="WhOutboundStockout">
+        update wms_wh_outbound_stockout
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="outboundOrderId != null">outbound_order_id = #{outboundOrderId},</if>
+            <if test="outboundOrderSeedId != null">outbound_order_seed_id = #{outboundOrderSeedId},</if>
+            <if test="shopGoodsId != null">shop_goods_id = #{shopGoodsId},</if>
+            <if test="oweNumber != null">owe_number = #{oweNumber},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWhOutboundStockoutById" parameterType="Long">
+        delete from wms_wh_outbound_stockout where id = #{id}
+    </delete>
+
+    <delete id="deleteWhOutboundStockoutByIds" parameterType="String">
+        delete from wms_wh_outbound_stockout where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 查询缺货管制订单列表Vo -->
+    <select id="selectWhOutboundStockoutListVo" parameterType="WhOutboundStockout" resultType="com.ruoyi.wh.vo.WhOutboundStockoutVo">
+        select t.id, t.outbound_order_id as outboundOrderId, t.outbound_order_seed_id as outboundOrderSeedId, t.shop_goods_id as shopGoodsId, t.owe_number as oweNumber, t.status,
+        o.order_code as orderCode, o.order_name as orderName, seed.shop_goods_code as shopGoodsCode, seed.shop_goods_name as shopGoodsName
+        from wms_wh_outbound_stockout t
+        left join wms_wh_outbound_order o on t.outbound_order_id = o.id
+        left join wms_wh_outbound_order_seed seed on t.outbound_order_seed_id = seed.id
+        <where>  t.del_flag = '0'
+            <if test="outboundOrderId != null "> and t.outbound_order_id = #{outboundOrderId}</if>
+            <if test="outboundOrderSeedId != null "> and t.outbound_order_seed_id = #{outboundOrderSeedId}</if>
+            <if test="shopGoodsId != null "> and t.shop_goods_id = #{shopGoodsId}</if>
+            <if test="oweNumber != null "> and t.owe_number = #{oweNumber}</if>
+            <if test="status != null  and status != ''"> and t.status = #{status}</if>
+            <if test="deptId != null "> and t.dept_id = #{deptId}</if>
+            <if test="params.orderCode != null  and params.orderCode != '' "> and o.order_code = #{params.orderCode}</if>
+            <if test="params.orderName != null  and params.orderName != '' "> and o.order_name = #{params.orderName}</if>
+        </where>
+    </select>
+
+</mapper>

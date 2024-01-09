@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增折扣权限设定')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-discountPermission-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">用户：</label>
+                <div class="col-sm-8">
+                    <input id="userId" name="userId" class="form-control" type="hidden">
+                    <input id="userName" name="userName" class="form-control" type="text" required onclick="selectUser();" readonly>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">最低折扣率：</label>
+                <div class="col-sm-8">
+                    <input id="minDiscountRate" name="minDiscountRate" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">最大折让金额：</label>
+                <div class="col-sm-8">
+                    <input id="maxDiscountPrice" name="maxDiscountPrice" class="form-control" type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">备注 ：</label>
+                <div class="col-sm-8">
+                    <textarea name="remark" class="form-control"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "basis/discountPermission"
+        $("#form-discountPermission-add").validate({
+            onkeyup: false,
+            rules:{
+                minDiscountRate:{ number:true,min: 0, max: 1,  },
+                maxDiscountPrice:{ number:true },
+            },
+            messages: {
+                "minDiscountRate": { remote: "请输入合法的数字" },
+                "maxDiscountPrice": { remote: "请输入整数" },
+            },
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-discountPermission-add').serialize());
+            }
+        }
+
+        var userPrefix = ctx + "system/user"
+        /*选择用户*/
+        function selectUser() {
+            var options = {
+                title: '选择用户',
+                url: userPrefix + "/selectUser",
+                callBack: doSubmit
+            };
+            $.modal.openOptions(options);
+        }
+
+        function doSubmit(index, layero){
+            var iframeWin = layero.find("iframe")[0].contentWindow.$.table;
+            var rows = iframeWin.selectFirstColumns();//调用子页面的方法 获取ID
+            if (rows.length == 0) {
+                $.modal.alertWarning("请至少选择一条记录");
+                return;
+            }
+
+            $.operate.post(prefix+"/checkSupplierCodeUnique", {"userId":rows.join()}, function (result) {
+            if (result.code == web_status.SUCCESS) {
+                $('#userId').val(rows.join())
+                var userName=iframeWin.selectColumns("userName").join();//调用子页面的方法 获取ID
+                $("#userName").val(userName);
+            }else if (result.code == web_status.WARNING) {
+                $.modal.alertWarning(result.msg);
+                return;
+                }
+            });
+            layer.close(index);
+        }
+    </script>
+</body>
+</html>

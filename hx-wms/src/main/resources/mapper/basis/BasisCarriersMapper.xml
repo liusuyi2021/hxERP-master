@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.basis.mapper.BasisCarriersMapper">
+    <resultMap type="BasisCarriers" id="BasisCarriersResult">
+        <result property="id"    column="id"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="carriersCode"    column="carriers_code"    />
+        <result property="carriersName"    column="carriers_name"    />
+        <result property="contactPerson"    column="contact_person"    />
+        <result property="telephone"    column="telephone"    />
+        <result property="mobilePhone"    column="mobile_phone"    />
+        <result property="email"    column="email"    />
+        <result property="address"    column="address"    />
+        <result property="carriersLevel"    column="carriers_level"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <sql id="selectBasisCarriersVo">
+        select id, warehouse_id, carriers_code, carriers_name, contact_person, telephone, mobile_phone, email, address, carriers_level, del_flag, create_by, create_time, update_by, update_time, remark, dept_id from wms_basis_carriers
+    </sql>
+
+    <select id="selectBasisCarriersList" parameterType="BasisCarriers" resultMap="BasisCarriersResult">
+        <include refid="selectBasisCarriersVo"/>
+        <where> del_flag = '0'
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="carriersCode != null  and carriersCode != ''"> and carriers_code = #{carriersCode}</if>
+            <if test="carriersName != null  and carriersName != ''"> and carriers_name like concat('%', #{carriersName}, '%')</if>
+            <if test="contactPerson != null  and contactPerson != ''"> and contact_person = #{contactPerson}</if>
+            <if test="telephone != null  and telephone != ''"> and telephone = #{telephone}</if>
+            <if test="mobilePhone != null  and mobilePhone != ''"> and mobile_phone = #{mobilePhone}</if>
+            <if test="email != null  and email != ''"> and email = #{email}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="carriersLevel != null  and carriersLevel != ''"> and carriers_level = #{carriersLevel}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+
+    <select id="selectBasisCarriersById" parameterType="Long" resultMap="BasisCarriersResult">
+        <include refid="selectBasisCarriersVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBasisCarriers" parameterType="BasisCarriers" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_basis_carriers
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="carriersCode != null">carriers_code,</if>
+            <if test="carriersName != null">carriers_name,</if>
+            <if test="contactPerson != null">contact_person,</if>
+            <if test="telephone != null">telephone,</if>
+            <if test="mobilePhone != null">mobile_phone,</if>
+            <if test="email != null">email,</if>
+            <if test="address != null">address,</if>
+            <if test="carriersLevel != null">carriers_level,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="carriersCode != null">#{carriersCode},</if>
+            <if test="carriersName != null">#{carriersName},</if>
+            <if test="contactPerson != null">#{contactPerson},</if>
+            <if test="telephone != null">#{telephone},</if>
+            <if test="mobilePhone != null">#{mobilePhone},</if>
+            <if test="email != null">#{email},</if>
+            <if test="address != null">#{address},</if>
+            <if test="carriersLevel != null">#{carriersLevel},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBasisCarriers" parameterType="BasisCarriers">
+        update wms_basis_carriers
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="carriersCode != null">carriers_code = #{carriersCode},</if>
+            <if test="carriersName != null">carriers_name = #{carriersName},</if>
+            <if test="contactPerson != null">contact_person = #{contactPerson},</if>
+            <if test="telephone != null">telephone = #{telephone},</if>
+            <if test="mobilePhone != null">mobile_phone = #{mobilePhone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="carriersLevel != null">carriers_level = #{carriersLevel},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBasisCarriersById" parameterType="Long">
+        delete from wms_basis_carriers where id = #{id}
+    </delete>
+
+    <delete id="deleteBasisCarriersByIds" parameterType="String">
+        delete from wms_basis_carriers where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 校验承运商编码是否唯一 -->
+    <select id="checkCarriersCodeUnique" parameterType="String" resultType="int">
+        select count(1) from wms_basis_carriers where del_flag = '0' and carriers_code=#{carriersCode} limit 1
+    </select>
+</mapper>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('选择出库单')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <input id="desWarehouseId" name="desWarehouseId" th:value="${desWarehouseId}" type="hidden">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label style="width: 85px">出库单编号：</label>
+                            <input type="text" name="orderCode"/>
+                        </li>
+                        <li>
+                            <label>订单号：</label>
+                            <input type="text" name="orderName"/>
+                        </li>
+                        <li>
+                            <label>订单日期：</label>
+                            <input type="text" class="time-input" placeholder="请选择订单日期" name="orderDate"/>
+                        </li>
+                        <li>
+                            <label>单位名称：</label>
+                            <input type="text" name="desWarehouseName"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var prefix = ctx + "wh/outboundOrder";
+
+    $(function() {
+        var options = {
+            url: prefix + "/selectList",
+            sortName: "createTime",
+            sortOrder: "desc",
+            queryParams: queryParams,
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            modalName: "选择出库单",
+            columns: [{
+                radio: true
+            },
+                {
+                    field: 'id',
+                    title: 'id',
+                    visible: false
+                },
+                {
+                    field: 'orderCode',
+                    title: '出库单编号'
+                },
+                {
+                    field: 'orderName',
+                    title: '订单号'
+                },
+                {
+                    field: 'orderDate',
+                    title: '订单日期'
+                },
+                {
+                    field: 'desWarehouseName',
+                    title: '交易单位名称'
+                },
+                {
+                    field: 'carriersName',
+                    title: '承运商名称',
+                    visible: false
+                },
+                {
+                    field: 'rate',
+                    title: '税率',
+                    visible: false
+                },
+                {
+                    field: 'tax',
+                    title: '税额',
+                    visible: false
+                },
+                {
+                    field: 'discountRate',
+                    title: '折扣率',
+                    visible: false
+                },
+                {
+                    field: 'discountAmount',
+                    title: '折扣金额',
+                    visible: false
+                },
+                {
+                    field: 'discountPrice',
+                    title: '折让金额',
+                    visible: false
+                },
+                {
+                    field: 'otherFee',
+                    title: '其他费用',
+                    visible: false
+                },
+                {
+                    field: 'untaxedAmount',
+                    title: '未税金额'
+                },
+                {
+                    field: 'totalAmount',
+                    title: '含税金额(合计)'
+                },
+                {
+                    field: 'statusDesc',
+                    title: '状态',
+                    visible: false
+                },
+                {
+                    field: 'remark',
+                    title: '备注',
+                    visible: false
+                }]
+        };
+        $.table.init(options);
+    });
+
+    function queryParams(params) {
+        var obj = {}; obj.orderTypes = '1,2';
+        var search = $.table.queryParams(params);
+        search.params =obj;
+        search.status = '5';
+        return search;
+    }
+
+</script>
+</body>
+</html>

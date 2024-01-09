@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.shop.mapper.ShopGoodsTypeMapper">
+    
+    <resultMap type="ShopGoodsType" id="ShopGoodsTypeResult">
+        <result property="id"    column="id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="ancestors"    column="ancestors"    />
+        <result property="goodsTypeCode"    column="goods_type_code"    />
+        <result property="goodsTypeName"    column="goods_type_name"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="parentName" column="parent_name" />
+    </resultMap>
+
+    <sql id="selectShopGoodsTypeVo">
+        select id, parent_id, ancestors, goods_type_code, goods_type_name, order_num, del_flag, create_by, create_time, update_by, update_time, remark, dept_id from wms_shop_goods_type
+    </sql>
+
+    <select id="selectShopGoodsTypeList" parameterType="ShopGoodsType" resultMap="ShopGoodsTypeResult">
+        <include refid="selectShopGoodsTypeVo"/>
+        <where>  del_flag ='0'
+            <if test="parentId != null "> and parent_id = #{parentId}</if>
+            <if test="ancestors != null  and ancestors != ''"> and ancestors = #{ancestors}</if>
+            <if test="goodsTypeCode != null  and goodsTypeCode != ''"> and goods_type_code = #{goodsTypeCode}</if>
+            <if test="goodsTypeName != null  and goodsTypeName != ''"> and goods_type_name like concat('%', #{goodsTypeName}, '%')</if>
+            <if test="orderNum != null "> and order_num = #{orderNum}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+        order by parent_id
+    </select>
+    
+    <select id="selectShopGoodsTypeById" parameterType="Long" resultMap="ShopGoodsTypeResult">
+        select t.id, t.parent_id, t.ancestors, t.goods_type_code, t.goods_type_name, t.order_num, t.del_flag, t.create_by, t.create_time, t.update_by, t.update_time, t.remark, t.dept_id, p.goods_type_name as parent_name
+        from wms_shop_goods_type t
+        left join wms_shop_goods_type p on p.id = t.parent_id
+        where t.id = #{id}
+    </select>
+        
+    <insert id="insertShopGoodsType" parameterType="ShopGoodsType" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_shop_goods_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">parent_id,</if>
+            <if test="ancestors != null">ancestors,</if>
+            <if test="goodsTypeCode != null">goods_type_code,</if>
+            <if test="goodsTypeName != null">goods_type_name,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">#{parentId},</if>
+            <if test="ancestors != null">#{ancestors},</if>
+            <if test="goodsTypeCode != null">#{goodsTypeCode},</if>
+            <if test="goodsTypeName != null">#{goodsTypeName},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateShopGoodsType" parameterType="ShopGoodsType">
+        update wms_shop_goods_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="ancestors != null">ancestors = #{ancestors},</if>
+            <if test="goodsTypeCode != null">goods_type_code = #{goodsTypeCode},</if>
+            <if test="goodsTypeName != null">goods_type_name = #{goodsTypeName},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteShopGoodsTypeById" parameterType="Long">
+        delete from wms_shop_goods_type where id = #{id}
+    </delete>
+
+    <delete id="deleteShopGoodsTypeByIds" parameterType="String">
+        delete from wms_shop_goods_type where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 校验商品类别编码是否唯一 -->
+    <select id="checkGoodsTypeCodeUnique" parameterType="String" resultType="int">
+		select count(1) from wms_shop_goods_type where del_flag = '0' and goods_type_code=#{goodsTypeCode} limit 1
+	</select>
+
+
+    <!-- 根据ID查询所有子商品类别 -->
+    <select id="selectChildrenShopGoodsTypeById" parameterType="Long" resultMap="ShopGoodsTypeResult">
+		select * from wms_shop_goods_type where del_flag = '0' and find_in_set(#{id}, ancestors)
+	</select>
+
+    <!--  修改子元素关系 -->
+    <update id="updateShopGoodsTypeChildren" parameterType="java.util.List">
+        update wms_shop_goods_type set ancestors =
+        <foreach collection="shopGoodsTypes" item="item" index="index"
+                 separator=" " open="case id" close="end">
+            when #{item.id} then #{item.ancestors}
+        </foreach>
+        where del_flag = '0' and id in
+        <foreach collection="shopGoodsTypes" item="item" index="index"
+                 separator="," open="(" close=")">
+            #{item.id}
+        </foreach>
+    </update>
+
+
+    <!--  查询商品类别数 -->
+    <select id="selectShopGoodsTypeCount" parameterType="ShopGoodsType" resultType="int">
+        select count(1) from wms_shop_goods_type
+        where del_flag = '0'
+        <if test="id != null and id != 0"> and id = #{id} </if>
+        <if test="parentId != null and parentId != 0"> and parent_id = #{parentId} </if>
+    </select>
+
+</mapper>

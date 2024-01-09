@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改商品信息')" />
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-goods-edit" th:object="${shopGoods}">
+        <input name="id" th:field="*{id}" type="hidden">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">商品类别：</label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input id="treeId" name="goodsTypeId" type="hidden" th:field="*{goodsTypeId}">
+                        <input class="form-control" type="text" onclick="selectGoodsTypeTree()" id="treeName" th:value="${shopGoodsType.goodsTypeName}" readonly="true" required>
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">商品编码：</label>
+                <div class="col-sm-8">
+                    <input name="goodsCode" th:field="*{goodsCode}" class="form-control" type="text" maxlength="16" required readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">商品名称：</label>
+                <div class="col-sm-8">
+                    <input name="goodsName" th:field="*{goodsName}" class="form-control" type="text" maxlength="30" required>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">商品条码：</label>
+                <div class="col-sm-8">
+                    <input name="goodsBarcode" th:field="*{goodsBarcode}" class="form-control" type="text" maxlength="30">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">商品规格：</label>
+                <div class="col-sm-8">
+                    <input name="goodsSearchstandard" th:field="*{goodsSearchstandard}" class="form-control" type="text" maxlength="50">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">商品颜色：</label>
+                <div class="col-sm-8">
+                    <input name="goodsColor" th:field="*{goodsColor}" class="form-control" type="text" maxlength="16">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">所属库位：</label>
+                <div class="col-sm-8">
+                    <!--<div class="input-group">-->
+                        <input id="storageId" name="storageId" type="hidden" th:field="*{storageId}">
+                        <input class="form-control" type="text"  id="storageName" name="storageName" th:value="${whStorage.storageName}" readonly="true" required><!--onclick="selectStorage()"-->
+                        <!--<span class="input-group-addon"><i class="fa fa-search"></i></span>-->
+                   <!-- </div>-->
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">商品单位：</label>
+                <div class="col-sm-8">
+                    <select name="goodsUnit" class="form-control m-b" th:with="type=${@dict.getType('MEASURING_UNIT')}" required>
+                        <option value="">请选择</option>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{goodsUnit}"></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">商品重量(千克)：</label>
+                <div class="col-sm-8">
+                    <input name="goodsWeight" th:field="*{goodsWeight}" class="form-control" type="text" maxlength="16">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">安全库存：</label>
+                <div class="col-sm-8">
+                    <input name="safetyStock" th:value="${shopGoodsSeed.safetyStock}" class="form-control" type="text" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <textarea name="remark" class="form-control" maxlength="200">[[*{remark}]]</textarea>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<div class="row">
+    <div class="col-sm-offset-5 col-sm-10">
+        <button type="button" class="btn btn-sm btn-primary" onclick="submitHandler()"><i class="fa fa-check"></i>保 存</button>&nbsp;
+        <button type="button" class="btn btn-sm btn-danger" onclick="closeItem()"><i class="fa fa-reply-all"></i>关 闭 </button>
+    </div>
+</div>
+
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var prefix = ctx + "shop/goods";
+    $("#form-goods-edit").validate({
+        onkeyup: false,
+        rules:{
+            costPrice:{ number:true,min:0 },
+            retailPrice:{ number:true,min:0 },
+            sellingPrice:{ number:true,min:0 },
+            wholesalePrice:{ number:true,min:0 },
+            safetyStock:{ digits:true, },
+        },
+        messages: {
+        },
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.saveTab(prefix + "/edit", $('#form-goods-edit').serialize());
+        }
+    }
+
+    var goodsTypePrefix = ctx + "shop/goodsType"
+    /*商品类别-选择父商品类别树*/
+    function selectGoodsTypeTree() {
+        var options = {
+            title: '商品类别选择',
+            width: "380",
+            url: goodsTypePrefix + "/selectGoodsTypeTree/" + $("#treeId").val(),
+            callBack: doSubmit
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmit(index, layero){
+        var body = layer.getChildFrame('body', index);
+        $("#treeId").val(body.find('#treeId').val());
+        $("#treeName").val(body.find('#treeName').val());
+        layer.close(index);
+    }
+
+    /* 选择库位 */
+    var storagePrefix = ctx + "wh/storage"
+    function selectStorage() {
+        var url = storagePrefix + '/selectStorage';
+        var options = {
+            title: '选择库位(储位)',
+            url: url,
+            callBack: doSubmitStorage
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmitStorage(index, layero){
+        var iframeWin = layero.find("iframe")[0].contentWindow.$.table;
+        var rows = iframeWin.selectFirstColumns();//调用子页面的方法 获取ID
+        if (rows.length == 0) {
+            $.modal.alertWarning("请至少选择一条记录");
+            return;
+        }
+
+        $('#storageId').val(rows.join())
+        var storageName=iframeWin.selectColumns("storageName");//调用子页面的方法 获取ID
+        $('#storageName').val(storageName)
+        layer.close(index);
+    }
+</script>
+</body>
+</html>

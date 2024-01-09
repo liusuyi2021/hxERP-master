@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('选择供应商')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label style="width: 80px">供应商编码：</label>
+                                <input type="text" name="supplierCode"/>
+                            </li>
+                            <li>
+                                <label style="width: 80px">供应商名称：</label>
+                                <input type="text" name="supplierName"/>
+                            </li>
+<!--                            <li>
+                                <label>级别：</label>
+                                <select name="supplierLevel" th:with="type=${@dict.getType('wms_level')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>-->
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('basis:supplier:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('basis:supplier:remove')}]];
+        var supplierLevelDatas = [[${@dict.getType('wms_level')}]];
+        var invoiceTypeDatas = [[${@dict.getType('sys_invoice')}]];
+        var prefix = ctx + "basis/supplier";
+
+        $(function() {
+            var options = {
+                url: prefix + "/selectList",
+                showSearch: false,
+                showRefresh: false,
+                showToggle: false,
+                showColumns: false,
+                modalName: "供应商管理",
+                columns: [{
+                    radio: true
+                },
+                {
+                    field: 'id',
+                    title: '供应商管理id',
+                    visible: false
+                },
+                {
+                    field: 'supplierCode',
+                    title: '供应商编码'
+                },
+                {
+                    field: 'supplierName',
+                    title: '供应商名称'
+                },
+                {
+                    field: 'contactPerson',
+                    title: '联系人'
+                },
+                {
+                    field: 'telephone',
+                    title: '电话'
+                },
+                {
+                    field: 'mobilePhone',
+                    title: '手机'
+                },
+                {
+                    field: 'address',
+                    title: '地址'
+                },
+                {
+                    field: 'supplierLevel',
+                    title: '级别',
+                    formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(supplierLevelDatas, value);
+                    }
+                }
+                ,{
+                    field: 'invoiceTax',
+                    title: '发票税率'
+                },
+                {
+                    field: 'invoiceType',
+                    title: '发票种类',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(invoiceTypeDatas, value);
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

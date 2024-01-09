@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('供应商管理详情')" />
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-supplier">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">供应商编码：</label>
+                    <div class="form-control-static" th:text="${basisSupplier.supplierCode}"></div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">供应商名称：</label>
+                    <div class="form-control-static" th:text="${basisSupplier.supplierName}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">联系人：</label>
+                    <div class="form-control-static" th:text="${basisSupplier.contactPerson}"></div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">电话：</label>
+                    <div class="form-control-static" th:text="${basisSupplier.telephone}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">手机：</label>
+                    <div class="form-control-static" th:text="${basisSupplier.mobilePhone}"></div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">邮箱：</label>
+                    <div class="form-control-static" th:text="${basisSupplier.email}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">地址：</label>
+                    <div class="form-control-static" th:text="${basisSupplier.address}"></div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">级别：</label>
+                    <div class="form-control-static" th:text="${@dict.getLabel('wms_level',basisSupplier.supplierLevel)}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">发票抬头：</label>
+                    <div class="form-control-static" th:text="${basisSupplier.invoiceLookedUp}"></div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">发票税率：</label>
+                    <div class="form-control-static" th:text="${basisSupplier.invoiceTax}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">发票种类：</label>
+                    <div class="form-control-static" th:text="${@dict.getLabel('sys_invoice',basisSupplier.invoiceType)}"></div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">备注：</label>
+                    <div class="form-control-static" th:text="${basisSupplier.remark}"></div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增库位尺寸')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-storageSize-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">库位尺寸名称：</label>
+                <div class="col-sm-8">
+                    <input name="storageSizeName" class="form-control" type="text" maxlength="16" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">库位长度(单位:毫米)：</label>
+                <div class="col-sm-8">
+                    <input id="length" name="length" class="form-control" type="text" maxlength="15" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">库位宽度(单位:毫米)：</label>
+                <div class="col-sm-8">
+                    <input id="width" name="width" class="form-control" type="text" maxlength="15" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">库位高度(单位:毫米)：</label>
+                <div class="col-sm-8">
+                    <input id="height" name="height" class="form-control" type="text" maxlength="15" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">最大重量(单位:千克)：</label>
+                <div class="col-sm-8">
+                    <input id="maxWeight" name="maxWeight" class="form-control" type="text" maxlength="13" >
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">最大托盘(单位:件)：</label>
+                <div class="col-sm-8">
+                    <input id="maxTray" name="maxTray" class="form-control" type="text" maxlength="8">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">最大体积(单位:立方毫米)：</label>
+                <div class="col-sm-8">
+                    <input id="maxVolume" name="maxVolume" class="form-control" type="text" maxlength="13">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <textarea name="remark" class="form-control" maxlength="200"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "wh/storageSize"
+        $("#form-storageSize-add").validate({
+            onkeyup: false,
+            rules:{
+                length:{ digits:true  },
+                width:{ digits:true },
+                height:{ digits:true},
+                maxWeight:{ digits:true },
+                maxTray:{ digits:true },
+                maxVolume:{ digits:true },
+            },
+            messages: {
+                "length": { remote: "请输入输入整数" },
+                "width": { remote: "请输入输入整数" },
+                "height": { remote: "请输入输入整数" },
+                "maxWeight": { remote: "请输入输入整数" },
+                "maxTray": { remote: "请输入输入整数" },
+                "maxVolume": { remote: "请输入输入整数" },
+            },
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-storageSize-add').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

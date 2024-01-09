@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('出库作业单')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <input type="hidden" id="status" name="status" th:value="2"/>
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label style="width: 85px">出库单编号：</label>
+                                <input type="text" name="orderCode"/>
+                            </li>
+                            <li>
+                                <label>订单号：</label>
+                                <input type="text" name="orderName"/>
+                            </li>
+                            <li>
+                                <label>订单日期：</label>
+                                <input type="text" class="time-input" placeholder="请选择订单日期" name="orderDate"/>
+                            </li>
+                            <li>
+                                <label>单位名称：</label>
+                                <input type="text" name="desWarehouseName"/>
+                            </li>
+                            <li>
+                                <label style="width: 85px">承运商名称：</label>
+                                <input type="text" name="carriersName"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a id="forpicking" class="btn btn-primary" onclick="onTowork('2')" shiro:hasPermission="wh:warehousingOrder:viewWork">
+                    待拣货
+                </a>
+                <a id="hasbeenpicking" class="btn btn-default" onclick="onTowork('3')" shiro:hasPermission="wh:outboundOrderSeed::editComplete">
+                    已拣货
+                </a>
+                <a id="hasbeenshipped" class="btn btn-default" onclick="onTowork('4')" shiro:hasPermission="wh:outboundOrder:editLoading">
+                    已发货
+                </a>
+                <a id="signfor" class="btn btn-default" onclick="onTowork('5')" shiro:hasPermission="wh:outboundOrder:editSignfor">
+                    签收回单(结单)
+                </a>
+            </div>
+
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var viewWorkFlag = [[${@permission.hasPermi('wh:warehousingOrder:viewWork')}]];
+        var editCompleteFlag = [[${@permission.hasPermi('wh:outboundOrderSeed::editComplete')}]];
+        var editRemoveFlag = [[${@permission.hasPermi('wh:outboundOrder:editRemove')}]];
+        var editLoadingFlag = [[${@permission.hasPermi('wh:outboundOrder:editLoading')}]];
+        var editSignforFlag = [[${@permission.hasPermi('wh:outboundOrder:editSignfor')}]];
+        var prefix = ctx + "wh/outboundOrder";
+        var orderSeedPrefix = ctx + "wh/outboundOrderSeed";
+
+        $(function() {
+            //先判断各按钮权限由右做右依次顺序，有权限项赋值状态给初始化table
+            if($.common.isEmpty(viewWorkFlag)){
+                onTowork('2');
+            }else if($.common.isEmpty(editCompleteFlag)){
+                onTowork('3')
+            }else if($.common.isEmpty(editLoadingFlag)){
+                onTowork('4');
+            }else if($.common.isEmpty(editSignforFlag)){
+                onTowork('5')
+            }
+
+            var options = {
+                url: prefix + "/list",
+                sortName: "createTime",
+                sortOrder: "desc",
+                queryParams: queryParams,//其他出库库订单和新订单状态
+                modalName: "其他出库单",
+                detailView: true,
+                onExpandRow : function(index, row, $detail) {
+                    initChildTable(index, row, $detail);
+                },
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'id',
+                    title: 'id',
+                    visible: false
+                },
+                {
+                    field: 'orderCode',
+                    title: '出库单编号'
+                },
+                {
+                    field: 'orderTypeDesc',
+                    title: '单据类型'
+                },
+                {
+                    field: 'orderName',
+                    title: '订单号'
+                },
+                {
+                    field: 'orderDate',
+                    title: '订单日期'
+                },
+                {
+                    field: 'desWarehouseName',
+                    title: '交易单位名称'
+                },
+                {
+                    field: 'carriersName',
+                    title: '承运商名称'
+                },
+                {
+                    field: 'rate',
+                    title: '税率'
+                },
+                {
+                    field: 'tax',
+                    title: '税额'
+                },
+                {
+                    field: 'discountRate',
+                    title: '折扣率'
+                },
+                {
+                    field: 'discountAmount',
+                    title: '折扣金额'
+                },
+                {
+                    field: 'discountPrice',
+                    title: '折让金额'
+                },
+                {
+                    field: 'otherFee',
+                    title: '其他费用'
+                },
+                {
+                    field: 'untaxedAmount',
+                    title: '未税金额'
+                },
+                {
+                    field: 'totalAmount',
+                    title: '含税金额'
+                },
+                {
+                    field: 'statusDesc',
+                    title: '状态'
+                },
+                {
+                    field: 'remark',
+                    title: '备注',
+                    visible: false
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        if(row.status == '2') {
+                            actions.push('<a class="btn btn-success btn-xs ' + editCompleteFlag + '" href="javascript:void(0)" onclick="editComplete(\'' + row.id + '\')"></i>确认拣货完成</a> ');
+                            actions.push('<a class="btn btn-danger btn-xs ' + editRemoveFlag + '" href="javascript:void(0)" onclick="editRemove(\'' + row.id + '\')">作废</a>');
+                        }else if(row.status == '3'){
+                            actions.push('<a class="btn btn-success btn-xs ' + editLoadingFlag + '" href="javascript:void(0)" onclick="editLoading(\'' + row.id + '\')"></i>装车发货</a> ');
+                        }else if(row.status == '4'){
+                            actions.push('<a class="btn btn-success btn-xs ' + editSignforFlag + '" href="javascript:void(0)" onclick="editSignfor(\'' + row.id + '\')"></i>签收回单</a> ');
+                        }
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+
+            /********子视图***********/
+            initChildTable = function(index, row, $detail) {
+                var childTable = $detail.html('<table style="table-layout:fixed"></table>').find('table');
+                $(childTable).bootstrapTable({
+                    url: orderSeedPrefix + "/list",
+                    method: 'post',
+                    sidePagination: "server",
+                    contentType: "application/x-www-form-urlencoded",
+                    queryParams : {
+                        outboundOrderId: row.id
+                    },
+                    columns: [{
+                        field : 'id',
+                        title : 'id',
+                        visible: false
+                    },
+                        {
+                            field: 'shopGoodsCode',
+                            title: '商品名称'
+                        },
+                        {
+                            field: 'shopGoodsName',
+                            title: '商品名称'
+                        },
+                        {
+                            field: 'goodsUnitDesc',
+                            title: '单位描述'
+                        },
+                        {
+                            field: 'planNumber',
+                            title: '计划数量'
+                        },
+                        {
+                            field: 'actualNumber',
+                            title: '实际数量'
+                        },
+                        {
+                            field: 'oweNumber',
+                            title: '欠货数量'
+                        },
+                        {
+                            field: 'taxUnitPrice',
+                            title: '含税单价'
+                        },
+                        {
+                            field: 'discountPrice',
+                            title: '折让金额'
+                        },
+                        {
+                            field: 'untaxedAmount',
+                            title: '未税金额'
+                        },
+                        {
+                            field: 'amount',
+                            title: '含税金额'
+                        }]
+                });
+            };
+
+        });
+
+        function queryParams(params) {
+            var search = $.table.queryParams(params);
+            search.status = $('#status').val();
+            return search;
+        }
+
+        function onTowork(obj) {
+            $('#status').val(obj)
+            //改变按钮样式
+            if(obj == '2'){
+                $('#forpicking').removeClass();
+                $('#forpicking').attr('class',"btn btn-primary");
+                $('#hasbeenpicking').removeClass();
+                $('#hasbeenpicking').attr('class',"btn btn-default");
+                $('#hasbeenshipped').removeClass();
+                $('#hasbeenshipped').attr('class',"btn btn-default");
+                $('#signfor').removeClass();
+                $('#signfor').attr('class',"btn btn-default");
+            }else if(obj == '3'){
+                $('#hasbeenpicking').removeClass();
+                $('#hasbeenpicking').attr('class',"btn btn-primary");
+                $('#forpicking').removeClass();
+                $('#forpicking').attr('class',"btn btn-default");
+                $('#hasbeenshipped').removeClass();
+                $('#hasbeenshipped').attr('class',"btn btn-default");
+                $('#signfor').removeClass();
+                $('#signfor').attr('class',"btn btn-default");
+            }else if(obj == '4'){
+                $('#hasbeenshipped').removeClass();
+                $('#hasbeenshipped').attr('class',"btn btn-primary");
+                $('#hasbeenpicking').removeClass();
+                $('#hasbeenpicking').attr('class',"btn btn-default");
+                $('#forpicking').removeClass();
+                $('#forpicking').attr('class',"btn btn-default");
+                $('#signfor').removeClass();
+                $('#signfor').attr('class',"btn btn-default");
+            }else if(obj == '5'){
+                $('#signfor').removeClass();
+                $('#signfor').attr('class',"btn btn-primary");
+                $('#hasbeenpicking').removeClass();
+                $('#hasbeenpicking').attr('class',"btn btn-default");
+                $('#hasbeenshipped').removeClass();
+                $('#hasbeenshipped').attr('class',"btn btn-default");
+                $('#forpicking').removeClass();
+                $('#forpicking').attr('class',"btn btn-default");
+            }
+            $.table.refresh();
+        }
+
+        /*******确认拣货完成*********/
+        function editComplete(id){
+            var url = orderSeedPrefix + '/editComplete/'+id;
+            $.modal.open("拣货", url);
+        }
+
+        /*******更改状态装车发货*********/
+        function editLoading(id){
+            $.modal.confirm("确认装车发货。", function() {
+                $.operate.post(prefix + "/editLoading", { "id": id, "status": '4' });
+            })
+        }
+
+        /*******更改状态签收回单*********/
+        function editSignfor(id) {
+            $.modal.confirm("确认签收回单。", function() {
+                $.operate.post(prefix + "/editSignfor", { "id": id, "status": '5' });
+            })
+        }
+
+        /*******作废*********/
+        function editRemove(id){
+            $.modal.confirm("确认作废。", function() {
+                $.operate.post(prefix + "/editRemove", { "id": id });
+            })
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('选择承运商')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label style="width: 80px">承运商编码：</label>
+                                <input type="text" name="carriersCode"/>
+                            </li>
+                            <li>
+                                <label style="width: 80px">承运商名称：</label>
+                                <input type="text" name="carriersName"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "basis/carriers";
+
+        $(function() {
+            var options = {
+                url: prefix + "/selectList",
+                showSearch: false,
+                showRefresh: false,
+                showToggle: false,
+                showColumns: false,
+                modalName: "承运商管理",
+                columns: [{
+                    radio: true
+                },
+                {
+                    field: 'id',
+                    title: '承运商管理id',
+                    visible: false
+                },
+                {
+                    field: 'carriersCode',
+                    title: '承运商编码'
+                },
+                {
+                    field: 'carriersName',
+                    title: '承运商名称'
+                },
+                {
+                    field: 'contactPerson',
+                    title: '联系人'
+                },
+                {
+                    field: 'telephone',
+                    title: '电话'
+                },
+                {
+                    field: 'mobilePhone',
+                    title: '手机'
+                },
+                {
+                    field: 'address',
+                    title: '地址'
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>
